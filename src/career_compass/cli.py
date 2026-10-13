@@ -393,6 +393,53 @@ def cmd_questions(args) -> int:
     return 0
 
 
+def cmd_questionnaire(args) -> int:
+    """生成浏览器答题页（自包含 HTML）。
+
+    相比终端逐题作答，页面能给出全局进度、支持改答任意一题、并且关掉浏览器也不丢进度，
+    对 65 道题的问卷更合适。
+    """
+    from .questionnaire import render_questionnaire
+
+    questions = load_questions()
+    html = render_questionnaire(
+        questions,
+        load_dimension_names(),
+        load_group_names(),
+        load_likert_scale(),
+    )
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(html, encoding="utf-8")
+    print(f"[ok] 答题页已生成：{out}（{len(questions)} 题，{len(html.encode('utf-8')) / 1024:.1f} KB）")
+    print("     双击打开它，在浏览器里点选作答；答完点页面底部的「导出作答文件」。")
+    print("     拿到作答后生成报告（自动找作答文件，两种导出方式都支持）：")
+    print("       python scripts/import_answers.py --report report.html")
+    print("     也可直接指定：career-compass report -i <作答文件路径> --html report.html")
+
+    if args.open:
+        _open_in_browser(out)
+    return 0
+
+
+def _open_in_browser(path: Path) -> None:
+    """尽力用系统默认程序打开文件；失败只提示，不影响命令成功。"""
+    import os
+    import subprocess
+
+    target = path.resolve()
+    try:
+        if sys.platform.startswith("win"):
+            os.startfile(str(target))  # type: ignore[attr-defined]  # noqa: S606
+        elif sys.platform == "darwin":
+            subprocess.run(["open", str(target)], check=False, timeout=10)
+        else:
+            subprocess.run(["xdg-open", str(target)], check=False, timeout=10)
+        print("[ok] 已尝试用默认浏览器打开。")
+    except Exception as e:  # pragma: no cover - 环境相关
+        print(f"[!] 没能自动打开浏览器（{e}），请手动双击：{target}")
+
+
 def cmd_list(args) -> int:
     """列出职业库与行业大盘数据。"""
     careers = load_careers()
@@ -640,6 +687,16 @@ def build_parser() -> argparse.ArgumentParser:
     sp = sub.add_parser("questions", help="导出问卷 JSON（不含答案）")
     sp.add_argument("--out", "-o", help="输出路径，缺省打印到标准输出")
     sp.set_defaults(func=cmd_questions)
+
+    sp = sub.add_parser("questionnaire", help="生成浏览器答题页（自包含 HTML）")
+    sp.add_argument(
+        "--out",
+        "-o",
+        default="questionnaire.html",
+        help="输出路径（默认 questionnaire.html）",
+    )
+    sp.add_argument("--open", action="store_true", help="生成后用默认浏览器打开")
+    sp.set_defaults(func=cmd_questionnaire)
 
     sp = sub.add_parser("list-careers", help="列出职业库")
     sp.set_defaults(func=cmd_list)

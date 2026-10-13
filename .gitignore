@@ -70,6 +70,9 @@ report.html
 *-report.md
 my-report.*
 me.json
+questionnaire.html
+my-answers.json
+career-compass-answers*.json
 
 # 但保留示例，便于他人快速预览
 !examples/demo_report.html

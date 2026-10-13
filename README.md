@@ -40,9 +40,9 @@ career-compass 的设计取向正好相反：
 | 特性 | 本项目的做法 |
 | --- | --- |
 | 可解释 | 每个结论都能回溯到具体维度得分与分差，附「优势 / 差距 / 提升建议」 |
-| 可审计 | 算法是不到 200 行的纯函数，有 126 项单元测试；数据文件带 `_meta.note` 标注出处与替换方法 |
+| 可审计 | 算法是不到 200 行的纯函数，有 161 项单元测试；数据文件带 `_meta.note` 标注出处与替换方法 |
 | 可替换 | 题库、职业画像、名人画像、行业大盘是 4 个独立 JSON，改数据不用改代码 |
-| 可扩展 | 有 CLI、有 Python API、有纯问卷导出（`questions` 子命令），可以接你自己的前端 |
+| 可扩展 | 有 CLI、有 Python API、有浏览器答题页（`questionnaire` 子命令），可以接你自己的前端 |
 | 零依赖 | 只用标准库（含 `urllib` 直连 DeepSeek），`pip install` 不会拉进一坨包 |
 
 **它不会做什么**：不做心理诊断，不做就业承诺，不做薪酬预测。它是一套**结构化的自我探索工具**，不是算命。
@@ -76,7 +76,30 @@ career-compass demo --persona creative --html creative.html
 career-compass demo --persona people   --html people.html
 ```
 
-自己真正做一遍（交互式答题，65 题约 10 分钟）：
+自己真正做一遍 —— **推荐用浏览器答题页**（65 题约 10 分钟，可随时中断续答）：
+
+```bash
+career-compass questionnaire --open          # 生成 questionnaire.html 并打开
+```
+
+在页面上点选作答，答完点底部「**导出作答文件**」，然后一条命令直接出报告：
+
+```bash
+python scripts/import_answers.py --report my-report.html --llm
+```
+
+`import_answers.py` 会自动去找你的作答 —— 先读剪贴板，再去「下载」文件夹里找最新的
+`career-compass-answers*.json`。所以「导出文件」和「复制作答」两个按钮都管用，
+不需要自己填路径。也可以显式指定：
+
+```bash
+python scripts/import_answers.py --from ~/Downloads/career-compass-answers.json --report my-report.html
+```
+
+> 答题页是**单文件、零外部依赖、不联网**的 HTML：双击就能打开，作答只存在你自己
+> 浏览器的 `localStorage` 里，不上传任何地方。页面里**不含答案字段**（有测试守着）。
+
+也可以留在终端里答（不适合 65 题，但适合脚本化场景）：
 
 ```bash
 career-compass run --save-answers me.json --html my-report.html --md my-report.md
@@ -100,7 +123,8 @@ career-compass questions -o questionnaire.json   # 导出问卷（不含答案�
 | 命令 | 作用 |
 | --- | --- |
 | `demo` | 用内置人格模板直接出报告，无需答题 |
-| `run` | 交互式答题并生成报告 |
+| **`questionnaire`** | **生成浏览器答题页（单文件 HTML，推荐）** |
+| `run` | 终端交互式答题并生成报告 |
 | `report` | 从已保存的作答文件重新生成报告 |
 | `score` | 只输出结构化评分 JSON |
 | `questions` | 导出问卷 JSON（刻意剔除答案字段，避免泄漏） |
@@ -267,12 +291,18 @@ career-compass/
 │   ├── scoring.py               # 评分引擎（纯函数，不碰 IO）
 │   ├── recommend.py             # 加权推荐引擎（纯函数）
 │   ├── report.py                # Markdown / 内联 SVG 的 HTML 报告
+│   ├── questionnaire.py         # 浏览器答题页生成（单文件自包含 HTML）
 │   ├── llm.py                   # DeepSeek 客户端（纯标准库 urllib）
+│   ├── console.py               # 跨平台 UTF-8 输出（修英文 Windows 中文崩溃）
 │   └── cli.py                   # 命令行入口
-├── tests/                       # 126 项测试
+├── scripts/
+│   └── import_answers.py        # 导入浏览器作答 → 直接出报告
+├── tests/                       # 161 项测试
 │   ├── test_scoring.py          #   计分、反向题、一致性、空数据
 │   ├── test_recommend.py        #   相似度曲线、权重、排序、大盘修正
 │   ├── test_data_integrity.py   #   数据一改就报警（id 引用、取值域、覆盖率）
+│   ├── test_questionnaire.py    #   防泄题、作答编码契约、导入脚本
+│   ├── test_llm_errors.py       #   错误码映射、重试策略、余额查询
 │   └── test_cli.py              #   端到端、零外链、XSS 转义、LLM 降级
 ├── examples/sample_answers.json
 └── docs/
@@ -413,7 +443,7 @@ print(client.chat([{"role": "user", "content": "你好"}]))
 
 ```bash
 pip install -e ".[dev]"     # 装 pytest / ruff
-pytest                      # 126 项测试
+pytest                      # 161 项测试
 pytest -q tests/test_recommend.py
 ruff check src tests
 ```
