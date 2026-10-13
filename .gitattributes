@@ -1,0 +1,31 @@
+# 让 Git 统一处理换行符：仓库内一律存为 LF。
+# 不做这一步的话，Windows 上提交的文件带 CRLF，Linux/macOS 协作者
+# 拉下来会看到「整个文件都被改了」的假 diff，CI 里也可能出怪问题。
+
+* text=auto eol=lf
+
+# ---- 二进制文件，禁止任何换行转换 ----
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.zip  binary
+*.gz   binary
+
+# ---- Windows 脚本必须保留 CRLF，否则无法执行 ----
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=crlf
+
+# ---- 语言标记，让 GitHub 正确统计与高亮 ----
+*.py     text diff=python
+*.json   text
+*.toml   text
+*.yml    text
+*.md     text
+*.html   text
+
+# ---- 示例报告为生成物，折叠在 diff 里，避免刷屏 ----
+examples/demo_report.html  linguist-generated=true

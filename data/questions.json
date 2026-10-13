@@ -1,0 +1,616 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "title": "职业能力测评题库",
+    "note": "题项为「基于公开成熟量表与标准化考试题型自编」的中文题项，非原量表逐字复制。各题 source 字段标注了设计参照来源。若用于正式心理测量，请用真实样本做信度效度检验（见 docs/THEORY.md）。",
+    "scale": {
+      "type": "likert",
+      "min": 1,
+      "max": 5,
+      "labels": ["非常不符合", "比较不符合", "一般", "比较符合", "非常符合"]
+    },
+    "groups": {
+      "academic": "学术能力维度",
+      "skill": "技能特长维度",
+      "trait": "个人特质维度",
+      "interest": "兴趣维度"
+    },
+    "dimensions": {
+      "academic.logic": "逻辑推理能力",
+      "academic.numeric": "数理运算能力",
+      "academic.verbal": "语言理解能力",
+      "academic.spatial": "空间想象能力",
+      "skill.tech": "技术实操",
+      "skill.creative": "创意设计",
+      "skill.social": "沟通协作",
+      "skill.manage": "组织管理",
+      "trait.openness": "开放性",
+      "trait.conscientiousness": "尽责性",
+      "trait.extraversion": "外向性",
+      "trait.agreeableness": "宜人性",
+      "trait.stability": "情绪稳定性",
+      "trait.grit": "坚毅性",
+      "trait.risk": "风险偏好",
+      "interest.realistic": "现实型 R",
+      "interest.investigative": "研究型 I",
+      "interest.artistic": "艺术型 A",
+      "interest.social": "社会型 S",
+      "interest.enterprising": "企业型 E",
+      "interest.conventional": "常规型 C"
+    }
+  },
+
+  "questions": [
+    {
+      "id": "LOG01",
+      "dim": "academic.logic",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.35,
+      "stem": "「所有程序员都懂逻辑。小李懂逻辑。」由此可以推出：",
+      "options": ["小李一定是程序员", "小李一定不是程序员", "无法确定小李是不是程序员", "所有懂逻辑的人都是程序员"],
+      "answer": 2,
+      "source": "参照 GRE/GMAT 逻辑推理「充分条件与逆命题」题型自编"
+    },
+    {
+      "id": "LOG02",
+      "dim": "academic.logic",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.55,
+      "stem": "数列 2, 6, 12, 20, 30, ? 的下一项是：",
+      "options": ["36", "40", "42", "44"],
+      "answer": 2,
+      "source": "参照公务员行测「数字推理」题型自编"
+    },
+    {
+      "id": "LOG03",
+      "dim": "academic.logic",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.45,
+      "stem": "「如果下雨，比赛就取消。比赛没有取消。」可以推出：",
+      "options": ["下雨了", "没有下雨", "无法确定", "比赛取消了但天气是晴的"],
+      "answer": 1,
+      "source": "参照经典命题逻辑「逆否命题等价」题型自编"
+    },
+    {
+      "id": "LOG04",
+      "dim": "academic.logic",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.65,
+      "stem": "某公司规定：「只有通过考核，才能转正。」小王已经转正了。由此可以推出：",
+      "options": ["小王通过了考核", "小王没有通过考核", "小王可能没有通过考核", "无法确定"],
+      "answer": 0,
+      "source": "参照「必要条件」推理题型自编"
+    },
+
+    {
+      "id": "NUM01",
+      "dim": "academic.numeric",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.45,
+      "stem": "一件商品先涨价 20%，再降价 20%，最终价格与原价相比：",
+      "options": ["上涨了 4%", "下降了 4%", "持平", "下降了 2%"],
+      "answer": 1,
+      "source": "参照百分数变化经典题型自编"
+    },
+    {
+      "id": "NUM02",
+      "dim": "academic.numeric",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.55,
+      "stem": "甲乙合作完成一项工作需 6 天，甲单独做需 10 天，乙单独做需几天？",
+      "options": ["12 天", "15 天", "18 天", "20 天"],
+      "answer": 1,
+      "source": "参照「工程问题」经典题型自编"
+    },
+    {
+      "id": "NUM03",
+      "dim": "academic.numeric",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.3,
+      "stem": "袋中有 3 个红球、2 个白球，随机取出 1 个，取到红球的概率是：",
+      "options": ["2/5", "3/5", "1/2", "3/2"],
+      "answer": 1,
+      "source": "参照概率基础题型自编"
+    },
+    {
+      "id": "NUM04",
+      "dim": "academic.numeric",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.4,
+      "stem": "某数增加 25% 后是 100，该数原值是：",
+      "options": ["75", "80", "84", "125"],
+      "answer": 1,
+      "source": "参照百分数逆运算题型自编"
+    },
+
+    {
+      "id": "VER01",
+      "dim": "academic.verbal",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.3,
+      "stem": "「医生 : 医院」相当于「教师 : ？」",
+      "options": ["学生", "学校", "知识", "粉笔"],
+      "answer": 1,
+      "source": "参照言语类比推理题型自编"
+    },
+    {
+      "id": "VER02",
+      "dim": "academic.verbal",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.5,
+      "stem": "下列哪一个与其他三个不属于同一类别？",
+      "options": ["钢琴", "小提琴", "长笛", "指挥"],
+      "answer": 3,
+      "source": "参照「归类/异类识别」题型自编"
+    },
+    {
+      "id": "VER03",
+      "dim": "academic.verbal",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.6,
+      "stem": "「并不是所有努力的人都会成功。」这句话的意思是：",
+      "options": ["所有努力的人都不会成功", "有些努力的人不会成功", "不努力的人会成功", "努力和成功没有关系"],
+      "answer": 1,
+      "source": "参照「量词否定」语义理解题型自编"
+    },
+
+    {
+      "id": "SPA01",
+      "dim": "academic.spatial",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.6,
+      "stem": "把一根绳子对折 3 次后，从中间剪一刀，绳子被剪成几段？",
+      "options": ["4 段", "6 段", "8 段", "9 段"],
+      "answer": 2,
+      "source": "参照空间折叠想象题型自编"
+    },
+    {
+      "id": "SPA02",
+      "dim": "academic.spatial",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.7,
+      "stem": "一个立方体的 12 条棱上各均匀放置 3 个小球（顶点处只放 1 个），共需要多少个小球？",
+      "options": ["36 个", "24 个", "20 个", "12 个"],
+      "answer": 2,
+      "source": "参照立体几何计数题型自编"
+    },
+    {
+      "id": "SPA03",
+      "dim": "academic.spatial",
+      "type": "objective",
+      "weight": 1.0,
+      "difficulty": 0.45,
+      "stem": "一张正方形纸片沿对角线对折一次，再对折一次，得到的形状是：",
+      "options": ["正方形", "等腰直角三角形", "梯形", "五边形"],
+      "answer": 1,
+      "source": "参照折纸空间想象题型自编"
+    },
+
+    {
+      "id": "SKT01",
+      "dim": "skill.tech",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我擅长使用各类工具或软件快速解决实际问题。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKT02",
+      "dim": "skill.tech",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "遇到设备或系统出故障时，我愿意自己动手排查原因。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKT03",
+      "dim": "skill.tech",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "学习一个新软件或新工具，我通常上手很快。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKC01",
+      "dim": "skill.creative",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我经常能想到别人没有注意到的点子和做法。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKC02",
+      "dim": "skill.creative",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我喜欢用文字、图像或音乐把自己的想法表达出来。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKC03",
+      "dim": "skill.creative",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我对外观、版式、配色这类细节比较敏感。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKS01",
+      "dim": "skill.social",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我能比较自然地主动向陌生人介绍自己。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKS02",
+      "dim": "skill.social",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "团队出现分歧时，我常能协调各方达成一致。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKS03",
+      "dim": "skill.social",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我擅长把复杂的事情讲得让别人一听就懂。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKM01",
+      "dim": "skill.manage",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我习惯把复杂任务拆成清单并安排先后顺序。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKM02",
+      "dim": "skill.manage",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "在小组或团队中，我常自然而然地承担统筹的角色。",
+      "source": "技能自评维度自编"
+    },
+    {
+      "id": "SKM03",
+      "dim": "skill.manage",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我有能力推动一件拖了很久的事情重新往前走。",
+      "source": "技能自评维度自编"
+    },
+
+    {
+      "id": "TRO01",
+      "dim": "trait.openness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我对陌生的领域和不同的观点充满好奇。",
+      "source": "参照 Big Five（OCEAN）开放性维度自编"
+    },
+    {
+      "id": "TRO02",
+      "dim": "trait.openness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我喜欢尝试以前没有做过的事情。",
+      "source": "参照 Big Five 开放性维度自编"
+    },
+    {
+      "id": "TRO03",
+      "dim": "trait.openness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我常常思考一些抽象或带有根本性的问题。",
+      "source": "参照 Big Five 开放性维度自编"
+    },
+    {
+      "id": "TRC01",
+      "dim": "trait.conscientiousness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我做事有始有终，很少半途而废。",
+      "source": "参照 Big Five 尽责性维度自编"
+    },
+    {
+      "id": "TRC02",
+      "dim": "trait.conscientiousness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我会提前做规划，而不是临近截止日期才动手。",
+      "source": "参照 Big Five 尽责性维度自编"
+    },
+    {
+      "id": "TRC03",
+      "dim": "trait.conscientiousness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "交付成果之前，我会反复检查细节。",
+      "source": "参照 Big Five 尽责性维度自编"
+    },
+    {
+      "id": "TRE01",
+      "dim": "trait.extraversion",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "在聚会或集体活动中，我通常是活跃气氛的那个人。",
+      "source": "参照 Big Five 外向性维度自编"
+    },
+    {
+      "id": "TRE02",
+      "dim": "trait.extraversion",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "和很多人长时间相处，我会觉得精力充沛。",
+      "source": "参照 Big Five 外向性维度自编"
+    },
+    {
+      "id": "TRE03",
+      "dim": "trait.extraversion",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我更愿意在人多的场合主动表达自己的观点。",
+      "source": "参照 Big Five 外向性维度自编"
+    },
+    {
+      "id": "TRA01",
+      "dim": "trait.agreeableness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我会主动留意并关心身边人的状态。",
+      "source": "参照 Big Five 宜人性维度自编"
+    },
+    {
+      "id": "TRA02",
+      "dim": "trait.agreeableness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "即使不同意对方，我也会照顾对方的感受。",
+      "source": "参照 Big Five 宜人性维度自编"
+    },
+    {
+      "id": "TRA03",
+      "dim": "trait.agreeableness",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "比起竞争，我更愿意选择合作。",
+      "source": "参照 Big Five 宜人性维度自编"
+    },
+    {
+      "id": "TRS01",
+      "dim": "trait.stability",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "面对突发状况，我能保持冷静。",
+      "source": "参照 Big Five 神经质维度反向题自编"
+    },
+    {
+      "id": "TRS02",
+      "dim": "trait.stability",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我很少因为一件小事烦躁很久。",
+      "source": "参照 Big Five 神经质维度反向题自编"
+    },
+    {
+      "id": "TRS03",
+      "dim": "trait.stability",
+      "type": "likert",
+      "weight": 1.0,
+      "reverse": true,
+      "stem": "压力一大，我就容易发挥失常。",
+      "source": "参照 Big Five 神经质维度反向计分题自编"
+    },
+    {
+      "id": "TRG01",
+      "dim": "trait.grit",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "定下的长期目标，即使进展缓慢我也会坚持下去。",
+      "source": "参照 Duckworth 坚毅量表（Grit Scale）自编"
+    },
+    {
+      "id": "TRG02",
+      "dim": "trait.grit",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "失败之后，我能比较快地重新开始。",
+      "source": "参照 Duckworth 坚毅量表自编"
+    },
+    {
+      "id": "TRG03",
+      "dim": "trait.grit",
+      "type": "likert",
+      "weight": 1.0,
+      "reverse": true,
+      "stem": "新的想法和项目常让我分心，很难长期专注一件事。",
+      "source": "参照 Duckworth 坚毅量表反向计分题自编"
+    },
+    {
+      "id": "TRK01",
+      "dim": "trait.risk",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "为了更高的回报，我愿意承担更大的不确定性。",
+      "source": "参照风险偏好/前景理论测量自编（中性维度，无高低优劣）"
+    },
+    {
+      "id": "TRK02",
+      "dim": "trait.risk",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "比起稳定的收入，我更看重未来的成长空间。",
+      "source": "参照职业价值取向测量自编（中性维度）"
+    },
+    {
+      "id": "TRK03",
+      "dim": "trait.risk",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "在没有明确规则和路径的情况下做决定，我不会特别焦虑。",
+      "source": "参照风险偏好测量自编（中性维度）"
+    },
+
+    {
+      "id": "INR01",
+      "dim": "interest.realistic",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我喜欢动手组装、修理或操作机械设备。",
+      "source": "参照 Holland RIASEC 现实型（R）自编中文题项"
+    },
+    {
+      "id": "INR02",
+      "dim": "interest.realistic",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "相比长期坐在办公室，我更愿意到现场或户外工作。",
+      "source": "参照 Holland RIASEC 现实型（R）自编"
+    },
+    {
+      "id": "INR03",
+      "dim": "interest.realistic",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "工具、仪器、材料的手感和性能，我会特别在意。",
+      "source": "参照 Holland RIASEC 现实型（R）自编"
+    },
+    {
+      "id": "INI01",
+      "dim": "interest.investigative",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我喜欢弄清楚事物背后的原理和来龙去脉。",
+      "source": "参照 Holland RIASEC 研究型（I）自编"
+    },
+    {
+      "id": "INI02",
+      "dim": "interest.investigative",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我愿意为分析一个复杂问题投入很长的时间。",
+      "source": "参照 Holland RIASEC 研究型（I）自编"
+    },
+    {
+      "id": "INI03",
+      "dim": "interest.investigative",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "看到一堆数据或现象，我会本能地想从中找规律。",
+      "source": "参照 Holland RIASEC 研究型（I）自编"
+    },
+    {
+      "id": "INA01",
+      "dim": "interest.artistic",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我喜欢创作（写作、绘画、摄影、音乐、视频等）。",
+      "source": "参照 Holland RIASEC 艺术型（A）自编"
+    },
+    {
+      "id": "INA02",
+      "dim": "interest.artistic",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我希望工作能让我自由表达自己的个性。",
+      "source": "参照 Holland RIASEC 艺术型（A）自编"
+    },
+    {
+      "id": "INA03",
+      "dim": "interest.artistic",
+      "type": "likert",
+      "weight": 1.0,
+      "reverse": true,
+      "stem": "我更愿意遵循成熟的标准做法，而不是另辟蹊径。",
+      "source": "参照 Holland RIASEC 艺术型（A）反向计分题自编"
+    },
+    {
+      "id": "INS01",
+      "dim": "interest.social",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "帮助别人成长进步，会让我很有成就感。",
+      "source": "参照 Holland RIASEC 社会型（S）自编"
+    },
+    {
+      "id": "INS02",
+      "dim": "interest.social",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我愿意倾听别人的烦恼，并给出自己的建议。",
+      "source": "参照 Holland RIASEC 社会型（S）自编"
+    },
+    {
+      "id": "INS03",
+      "dim": "interest.social",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我对教育、护理、公益服务这类工作有天然的好感。",
+      "source": "参照 Holland RIASEC 社会型（S）自编"
+    },
+    {
+      "id": "INE01",
+      "dim": "interest.enterprising",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我喜欢说服别人接受我的方案或观点。",
+      "source": "参照 Holland RIASEC 企业型（E）自编"
+    },
+    {
+      "id": "INE02",
+      "dim": "interest.enterprising",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我希望能带一个团队，或者主导一个项目。",
+      "source": "参照 Holland RIASEC 企业型（E）自编"
+    },
+    {
+      "id": "INE03",
+      "dim": "interest.enterprising",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我对商业机会和新的赚钱方式比较敏感。",
+      "source": "参照 Holland RIASEC 企业型（E）自编"
+    },
+    {
+      "id": "INC01",
+      "dim": "interest.conventional",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我喜欢把资料、文件、数据整理得井井有条。",
+      "source": "参照 Holland RIASEC 常规型（C）自编"
+    },
+    {
+      "id": "INC02",
+      "dim": "interest.conventional",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "按照明确的流程和标准做事，会让我感到安心。",
+      "source": "参照 Holland RIASEC 常规型（C）自编"
+    },
+    {
+      "id": "INC03",
+      "dim": "interest.conventional",
+      "type": "likert",
+      "weight": 1.0,
+      "stem": "我擅长处理需要严谨核对的琐碎事务。",
+      "source": "参照 Holland RIASEC 常规型（C）自编"
+    }
+  ]
+}

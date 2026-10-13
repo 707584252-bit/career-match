@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, dev]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: 测试 (Python ${{ matrix.python-version }} / ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.9", "3.11", "3.13"]
+        include:
+          # 在 Windows 与 macOS 上各跑一个版本，验证路径解析与换行符
+          - os: windows-latest
+            python-version: "3.12"
+          - os: macos-latest
+            python-version: "3.12"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: 安装项目与测试依赖
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: 确认零第三方运行时依赖
+        run: |
+          python -c "
+          import re, pathlib
+          txt = pathlib.Path('pyproject.toml').read_text(encoding='utf-8')
+          m = re.search(r'^dependencies\s*=\s*\[(.*?)\]', txt, re.S | re.M)
+          deps = m.group(1).strip() if m else 'PATTERN-NOT-FOUND'
+          assert deps == '', f'运行时依赖应为空，实际为: {deps!r}'
+          print('运行时依赖确实为空 OK')
+          "
+
+      - name: 运行测试
+        run: python -m pytest -q
+
+      - name: 端到端冒烟（demo 出报告）
+        shell: bash
+        run: |
+          career-compass demo --persona tech --html /tmp/r.html --md /tmp/r.md
+          test -s /tmp/r.html
+          grep -q "职业能力测评报告" /tmp/r.html
+          echo "报告生成成功 ✓"
+
+      - name: 报告零外部依赖校验
+        run: python scripts/check_report_offline.py /tmp/r.html
+
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install --upgrade pip ruff
+      - run: ruff check src tests
+      - run: ruff format --check src tests

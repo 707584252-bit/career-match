@@ -1,0 +1,165 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "note": "名人典范画像基于公开传记、访谈与行业报道整理，是对其「可观察到的能力与行为倾向」的概括性标注，不是心理测量结果，也不构成对其真实人格的论断。它的作用有两个：(1) 为推荐结果提供具象参照；(2) 作为职业画像的先验校准锚点——若某职业的画像与该领域公认高手的能力分布严重偏离，说明该职业画像需要复核。",
+    "profile_semantics": "稀疏向量，0-100，语义同 careers.json。"
+  },
+
+  "role_models": [
+    {
+      "id": "qian_xuesen",
+      "name": "钱学森",
+      "field": "航天工程 / 系统工程",
+      "holland": "IAR",
+      "traits": {
+        "academic.logic": 94, "academic.numeric": 90, "academic.spatial": 82,
+        "skill.tech": 82, "skill.manage": 84,
+        "trait.openness": 88, "trait.conscientiousness": 88, "trait.grit": 94,
+        "interest.realistic": 70, "interest.investigative": 94
+      },
+      "insight": "跨学科整合与超长期主义：把数学、工程、组织管理打通的典型路径，适合「研究 + 工程 + 系统统筹」三合一的人。"
+    },
+    {
+      "id": "yuan_longping",
+      "name": "袁隆平",
+      "field": "农业科研",
+      "holland": "IRC",
+      "traits": {
+        "academic.logic": 84, "academic.numeric": 78,
+        "skill.tech": 78,
+        "trait.openness": 84, "trait.conscientiousness": 88, "trait.grit": 96, "trait.stability": 84,
+        "interest.realistic": 90, "interest.investigative": 90
+      },
+      "insight": "田间地头的科研：把「动手实践」和「科学方法」结合得极紧，说明研究型不等于只坐实验室。"
+    },
+    {
+      "id": "tu_youyou",
+      "name": "屠呦呦",
+      "field": "药物化学 / 医学研究",
+      "holland": "IC",
+      "traits": {
+        "academic.logic": 86, "academic.numeric": 78,
+        "trait.conscientiousness": 92, "trait.grit": 94, "trait.stability": 84,
+        "interest.investigative": 92, "interest.conventional": 84
+      },
+      "insight": "长期主义的胜利：在低可见度、低回报的课题上持续投入数十年，是「坚毅性 + 严谨性」的教科书案例。"
+    },
+    {
+      "id": "zhang_guimei",
+      "name": "张桂梅",
+      "field": "乡村教育",
+      "holland": "SAE",
+      "traits": {
+        "academic.verbal": 82,
+        "skill.social": 94, "skill.manage": 84,
+        "trait.agreeableness": 92, "trait.conscientiousness": 90, "trait.grit": 96, "trait.stability": 86,
+        "interest.social": 96
+      },
+      "insight": "意义驱动的职业形态：当「社会型」兴趣与极强坚毅叠加时，物质回报不是主要驱动力，价值感才是。"
+    },
+    {
+      "id": "lang_ping",
+      "name": "郎平",
+      "field": "竞技体育 / 教练",
+      "holland": "RSE",
+      "traits": {
+        "academic.spatial": 76,
+        "skill.manage": 88, "skill.social": 80,
+        "trait.extraversion": 78, "trait.stability": 92, "trait.grit": 94, "trait.conscientiousness": 86,
+        "interest.realistic": 88, "interest.social": 80, "interest.enterprising": 82
+      },
+      "insight": "从运动员到教练的迁移：顶尖执行者转向统筹者，需要额外补齐「组织管理」与「情绪稳定」，而不仅是技术。"
+    },
+    {
+      "id": "luo_xiang",
+      "name": "罗翔",
+      "field": "法学教育与传播",
+      "holland": "SAE",
+      "traits": {
+        "academic.logic": 88, "academic.verbal": 94,
+        "skill.creative": 80, "skill.social": 86,
+        "trait.openness": 84, "trait.agreeableness": 84,
+        "interest.investigative": 80, "interest.artistic": 82, "interest.social": 88
+      },
+      "insight": "专业 + 表达 = 放大杠杆：同一份专业能力，加上传播技能后影响半径可以扩大几个量级。"
+    },
+    {
+      "id": "zhang_yimou",
+      "name": "张艺谋",
+      "field": "电影导演 / 视觉艺术",
+      "holland": "AES",
+      "traits": {
+        "academic.spatial": 90,
+        "skill.creative": 96, "skill.manage": 86,
+        "trait.openness": 92, "trait.conscientiousness": 84, "trait.grit": 88,
+        "interest.artistic": 94, "interest.enterprising": 78
+      },
+      "insight": "创作也需要工程化管理：大制作创作者往往是「艺术型 + 管理型」的组合，而非纯粹的灵感型选手。"
+    },
+    {
+      "id": "dong_mingzhu",
+      "name": "董明珠",
+      "field": "制造业经营 / 销售",
+      "holland": "ECS",
+      "traits": {
+        "academic.verbal": 84,
+        "skill.manage": 90, "skill.social": 84,
+        "trait.conscientiousness": 90, "trait.extraversion": 84, "trait.grit": 92, "trait.risk": 72,
+        "interest.enterprising": 94, "interest.conventional": 74
+      },
+      "insight": "从一线销售到经营者的路径：结果导向 + 极强执行，是「企业型」兴趣在传统制造业的典型落地方式。"
+    },
+    {
+      "id": "lei_jun",
+      "name": "雷军",
+      "field": "科技创业",
+      "holland": "EIR",
+      "traits": {
+        "academic.logic": 84, "academic.numeric": 76,
+        "skill.tech": 84, "skill.manage": 90, "skill.social": 80,
+        "trait.openness": 86, "trait.grit": 92, "trait.risk": 88, "trait.extraversion": 74,
+        "interest.investigative": 80, "interest.enterprising": 90
+      },
+      "insight": "技术底子 + 商业嗅觉：纯技术路径向上走，通常需要在某个阶段补上「商业判断」这一课。"
+    },
+    {
+      "id": "zhang_yiming",
+      "name": "张一鸣",
+      "field": "互联网 / 信息分发",
+      "holland": "IER",
+      "traits": {
+        "academic.logic": 90, "academic.numeric": 82,
+        "skill.tech": 82, "skill.manage": 88,
+        "trait.openness": 92, "trait.grit": 88, "trait.stability": 86, "trait.risk": 82,
+        "interest.investigative": 88, "interest.enterprising": 84
+      },
+      "insight": "理性决策与延迟满足：把「研究型」的分析习惯用在商业决策上，是其被反复提及的思维特征。"
+    },
+    {
+      "id": "inamori_kazuo",
+      "name": "稻盛和夫",
+      "field": "企业经营 / 管理哲学",
+      "holland": "CES",
+      "traits": {
+        "academic.logic": 76,
+        "skill.manage": 92, "skill.social": 82,
+        "trait.conscientiousness": 94, "trait.agreeableness": 84, "trait.grit": 94, "trait.stability": 88,
+        "interest.conventional": 88, "interest.social": 80, "interest.enterprising": 84
+      },
+      "insight": "管理中的「常规型」力量：把流程、标准、持续改善做到极致，本身就是极高的竞争力。"
+    },
+    {
+      "id": "rowling",
+      "name": "J.K. 罗琳",
+      "field": "文学创作",
+      "holland": "AI",
+      "traits": {
+        "academic.verbal": 94,
+        "skill.creative": 96,
+        "trait.openness": 92, "trait.grit": 92, "trait.stability": 80, "trait.conscientiousness": 82,
+        "interest.artistic": 96, "interest.investigative": 78
+      },
+      "insight": "创作型职业的幸存者偏差：外界看到的是成功，路径上真正起作用的是在被连续拒绝后仍然继续写。"
+    }
+  ]
+}

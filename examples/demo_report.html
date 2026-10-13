@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>职业能力测评报告</title>
+<style>
+  :root {
+    --ink: #1f2430; --ink-soft: #5a6472; --line: #e3e7ee;
+    --bg: #ffffff; --bg-soft: #f6f8fb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0 16px 64px;
+    background: var(--bg-soft); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+                 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    line-height: 1.68; font-size: 16px;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; }
+  header.top { padding: 40px 0 20px; }
+  header.top h1 { margin: 0 0 8px; font-size: 28px; letter-spacing: -0.2px; }
+  .stamp { color: var(--ink-soft); font-size: 13.5px; }
+  .kpis { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0 8px; }
+  .kpi {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    padding: 12px 18px; min-width: 132px; flex: 1 1 132px;
+  }
+  .kpi .k { font-size: 12.5px; color: var(--ink-soft); }
+  .kpi .v { font-size: 22px; font-weight: 700; margin-top: 2px; }
+  .panel {
+    background: #fff; border: 1px solid var(--line); border-radius: 18px;
+    padding: 24px; margin: 18px 0;
+  }
+  .panel h2 { margin: 0 0 16px; font-size: 19px; }
+  .chartrow { display: flex; flex-wrap: wrap; gap: 28px; align-items: center; }
+  .chartrow > div { flex: 1 1 300px; min-width: 260px; }
+  .gcards { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+  .gcard {
+    flex: 1 1 150px; background: var(--bg-soft); border-radius: 14px; padding: 14px 16px;
+    border: 1px solid var(--line);
+  }
+  .gname { font-size: 13px; color: var(--ink-soft); }
+  .gval { font-size: 30px; font-weight: 700; line-height: 1.2; }
+  .warn {
+    background: #fff7ed; border: 1px solid #fed7aa; color: #7c2d12;
+    border-radius: 14px; padding: 14px 18px; margin: 16px 0; font-size: 14.5px;
+  }
+  .warn ul { margin: 8px 0 0; padding-left: 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--ink-soft); font-weight: 600; font-size: 13px; }
+  td:first-child { white-space: nowrap; }
+  .rec {
+    background: #fff; border: 1px solid var(--line); border-radius: 18px;
+    padding: 22px 24px; margin: 16px 0;
+  }
+  .rec-head { display: flex; align-items: flex-start; gap: 14px; }
+  .rank {
+    width: 34px; height: 34px; border-radius: 10px; background: var(--bg-soft);
+    border: 1px solid var(--line); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; color: var(--ink-soft); flex: 0 0 auto;
+  }
+  .rec-title { flex: 1 1 auto; }
+  .rec-title h3 { margin: 2px 0 4px; font-size: 19px; }
+  .rec-title .meta { font-size: 13px; color: var(--ink-soft); }
+  .rec-score { text-align: right; flex: 0 0 auto; }
+  .rec-score .big { font-size: 28px; font-weight: 700; color: #3b6fd4; line-height: 1.1; }
+  .rec-score .small { font-size: 11.5px; color: var(--ink-soft); }
+  .minibars { margin: 16px 0 6px; display: grid; gap: 8px; }
+  .mb { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-soft); }
+  .mb span { width: 62px; flex: 0 0 auto; }
+  .mb b { width: 30px; text-align: right; color: var(--ink); flex: 0 0 auto; }
+  .track { flex: 1 1 auto; height: 9px; background: var(--line); border-radius: 5px; overflow: hidden; }
+  .track i { display: block; height: 100%; border-radius: 5px; }
+  .desc { font-size: 14.5px; color: var(--ink-soft); margin: 6px 0 0; }
+  .sect { margin-top: 14px; }
+  .sect-t { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 6px; }
+  .sect-t.ok { color: #0f7a5f; }
+  .sect-t.gap { color: #b45309; }
+  .sect ul, .narr ul { margin: 0; padding-left: 20px; font-size: 14.5px; color: var(--ink-soft); }
+  .sect li, .narr li { margin: 4px 0; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .rm { border-left: 3px solid var(--line); padding: 4px 0 4px 12px; margin: 10px 0; }
+  .rmn { font-weight: 700; font-size: 14.5px; }
+  .rmf { font-weight: 400; color: var(--ink-soft); font-size: 12.5px; margin-left: 8px; }
+  .rmi { font-size: 13.5px; color: var(--ink-soft); }
+  .narr h3 { font-size: 17px; margin: 18px 0 8px; }
+  .narr h4 { font-size: 15px; margin: 14px 0 6px; }
+  .narr p { font-size: 14.5px; color: var(--ink-soft); margin: 8px 0; }
+  code {
+    background: var(--bg-soft); padding: 2px 6px; border-radius: 6px;
+    font-size: 13.5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  footer {
+    text-align: center; color: var(--ink-soft); font-size: 12.5px;
+    margin-top: 28px; line-height: 1.8;
+  }
+  @media (max-width: 720px) {
+    body { font-size: 15.5px; padding: 0 12px 48px; }
+    header.top { padding: 26px 0 12px; }
+    header.top h1 { font-size: 22px; }
+    .panel, .rec { padding: 18px 16px; border-radius: 16px; }
+    .two { grid-template-columns: 1fr; gap: 10px; }
+    table { font-size: 13.5px; }
+    th, td { padding: 8px 6px; }
+    .rec-head { flex-wrap: wrap; }
+    .rec-score { margin-left: 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>职业能力测评报告</h1>
+    <div class="stamp">生成时间：2026-10-13 12:13　·　由 career-compass 规则引擎计算</div>
+    <div class="kpis">
+      <div class="kpi"><div class="k">霍兰德代码</div><div class="v">IRC</div></div>
+      <div class="kpi"><div class="k">数据质量指数</div><div class="v">85%</div></div>
+      <div class="kpi"><div class="k">完成率</div><div class="v">100%</div></div>
+      <div class="kpi"><div class="k">核心兴趣类型</div><div class="v" style="font-size:15px;padding-top:5px"></div></div>
+    </div>
+    
+  </header>
+
+  <section class="panel">
+    <h2>一、四大维度总览</h2>
+    <div class="chartrow">
+      <div><svg viewBox="0 0 300 300" width="100%" style="max-width:300px" role="img" aria-label="雷达图" xmlns="http://www.w3.org/2000/svg"><polygon points="150.0,126.0 174.0,150.0 150.0,174.0 126.0,150.0" fill="none" stroke="#e3e7ee" stroke-width="1"/><polygon points="150.0,102.0 198.0,150.0 150.0,198.0 102.0,150.0" fill="none" stroke="#e3e7ee" stroke-width="1"/><polygon points="150.0,78.0 222.0,150.0 150.0,222.0 78.0,150.0" fill="none" stroke="#e3e7ee" stroke-width="1"/><polygon points="150.0,54.0 246.0,150.0 150.0,246.0 54.0,150.0" fill="none" stroke="#e3e7ee" stroke-width="1"/><line x1="150.0" y1="150.0" x2="150.0" y2="54.0" stroke="#e3e7ee" stroke-width="1"/><line x1="150.0" y1="150.0" x2="246.0" y2="150.0" stroke="#e3e7ee" stroke-width="1"/><line x1="150.0" y1="150.0" x2="150.0" y2="246.0" stroke="#e3e7ee" stroke-width="1"/><line x1="150.0" y1="150.0" x2="54.0" y2="150.0" stroke="#e3e7ee" stroke-width="1"/><polygon points="150.0,74.0 214.0,150.0 150.0,209.4 91.3,150.0" fill="#3b6fd4" fill-opacity="0.18" stroke="#3b6fd4" stroke-width="2"/><circle cx="150.0" cy="74.0" r="3.2" fill="#3b6fd4"/><circle cx="214.0" cy="150.0" r="3.2" fill="#3b6fd4"/><circle cx="150.0" cy="209.4" r="3.2" fill="#3b6fd4"/><circle cx="91.3" cy="150.0" r="3.2" fill="#3b6fd4"/><text x="150.0" y="28.0" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">学术能力维度</text><text x="150.0" y="41.0" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#3b6fd4">79</text><text x="272.0" y="150.0" text-anchor="start" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">技能特长维度</text><text x="272.0" y="163.0" text-anchor="start" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#3b6fd4">67</text><text x="150.0" y="272.0" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">个人特质维度</text><text x="150.0" y="285.0" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#3b6fd4">62</text><text x="28.0" y="150.0" text-anchor="end" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">兴趣维度</text><text x="28.0" y="163.0" text-anchor="end" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#3b6fd4">61</text></svg></div>
+      <div><svg viewBox="0 0 280 280" width="100%" style="max-width:280px" role="img" aria-label="雷达图" xmlns="http://www.w3.org/2000/svg"><polygon points="140.0,118.5 158.6,129.2 158.6,150.8 140.0,161.5 121.4,150.8 121.4,129.2" fill="none" stroke="#e3e7ee" stroke-width="1"/><polygon points="140.0,97.0 177.2,118.5 177.2,161.5 140.0,183.0 102.8,161.5 102.8,118.5" fill="none" stroke="#e3e7ee" stroke-width="1"/><polygon points="140.0,75.5 195.9,107.8 195.9,172.2 140.0,204.5 84.1,172.2 84.1,107.8" fill="none" stroke="#e3e7ee" stroke-width="1"/><polygon points="140.0,54.0 214.5,97.0 214.5,183.0 140.0,226.0 65.5,183.0 65.5,97.0" fill="none" stroke="#e3e7ee" stroke-width="1"/><line x1="140.0" y1="140.0" x2="140.0" y2="54.0" stroke="#e3e7ee" stroke-width="1"/><line x1="140.0" y1="140.0" x2="214.5" y2="97.0" stroke="#e3e7ee" stroke-width="1"/><line x1="140.0" y1="140.0" x2="214.5" y2="183.0" stroke="#e3e7ee" stroke-width="1"/><line x1="140.0" y1="140.0" x2="140.0" y2="226.0" stroke="#e3e7ee" stroke-width="1"/><line x1="140.0" y1="140.0" x2="65.5" y2="183.0" stroke="#e3e7ee" stroke-width="1"/><line x1="140.0" y1="140.0" x2="65.5" y2="97.0" stroke="#e3e7ee" stroke-width="1"/><polygon points="140.0,75.5 202.1,104.2 177.2,161.5 140.0,168.7 102.8,161.5 84.1,107.8" fill="#8b5cf6" fill-opacity="0.18" stroke="#8b5cf6" stroke-width="2"/><circle cx="140.0" cy="75.5" r="3.2" fill="#8b5cf6"/><circle cx="202.1" cy="104.2" r="3.2" fill="#8b5cf6"/><circle cx="177.2" cy="161.5" r="3.2" fill="#8b5cf6"/><circle cx="140.0" cy="168.7" r="3.2" fill="#8b5cf6"/><circle cx="102.8" cy="161.5" r="3.2" fill="#8b5cf6"/><circle cx="84.1" cy="107.8" r="3.2" fill="#8b5cf6"/><text x="140.0" y="28.0" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">现实型 R</text><text x="140.0" y="41.0" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#8b5cf6">75</text><text x="237.0" y="84.0" text-anchor="start" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">研究型 I</text><text x="237.0" y="97.0" text-anchor="start" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#8b5cf6">83</text><text x="237.0" y="196.0" text-anchor="start" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">艺术型 A</text><text x="237.0" y="209.0" text-anchor="start" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#8b5cf6">50</text><text x="140.0" y="252.0" text-anchor="middle" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">社会型 S</text><text x="140.0" y="265.0" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#8b5cf6">33</text><text x="43.0" y="196.0" text-anchor="end" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">企业型 E</text><text x="43.0" y="209.0" text-anchor="end" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#8b5cf6">50</text><text x="43.0" y="84.0" text-anchor="end" dominant-baseline="middle" font-size="12" font-family="inherit" fill="#1f2430">常规型 C</text><text x="43.0" y="97.0" text-anchor="end" dominant-baseline="middle" font-size="11" font-weight="600" font-family="inherit" fill="#8b5cf6">75</text></svg></div>
+    </div>
+    <div class="gcards"><div class="gcard"><div class="gname">学术能力维度</div><div class="gval" style="color:#3b6fd4">79</div></div><div class="gcard"><div class="gname">技能特长维度</div><div class="gval" style="color:#0f9d8c">67</div></div><div class="gcard"><div class="gname">个人特质维度</div><div class="gval" style="color:#c4711f">62</div></div><div class="gcard"><div class="gname">兴趣维度</div><div class="gval" style="color:#8b5cf6">61</div></div></div>
+  </section>
+
+  <section class="panel">
+    <h2>二、能力明细（21 个子维度）</h2>
+    <svg viewBox="0 0 620 558" width="100%" role="img" aria-label="条形图" xmlns="http://www.w3.org/2000/svg"><text x="0" y="22.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">逻辑推理能力</text><rect x="142" y="10" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="10" width="432.0" height="11" rx="5.5" fill="#3b6fd4"/><text x="582" y="22.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">100</text><text x="0" y="48.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">数理运算能力</text><rect x="142" y="36" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="36" width="201.1" height="11" rx="5.5" fill="#3b6fd4"/><text x="582" y="48.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">47</text><text x="0" y="74.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">语言理解能力</text><rect x="142" y="62" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="62" width="432.0" height="11" rx="5.5" fill="#3b6fd4"/><text x="582" y="74.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">100</text><text x="0" y="100.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">空间想象能力</text><rect x="142" y="88" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="88" width="303.4" height="11" rx="5.5" fill="#3b6fd4"/><text x="582" y="100.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">70</text><text x="0" y="126.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">技术实操</text><rect x="142" y="114" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="114" width="360.0" height="11" rx="5.5" fill="#0f9d8c"/><text x="582" y="126.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">83</text><text x="0" y="152.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">创意设计</text><rect x="142" y="140" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="140" width="288.0" height="11" rx="5.5" fill="#0f9d8c"/><text x="582" y="152.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">67</text><text x="0" y="178.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">沟通协作</text><rect x="142" y="166" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="166" width="180.0" height="11" rx="5.5" fill="#0f9d8c"/><text x="582" y="178.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">42</text><text x="0" y="204.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">组织管理</text><rect x="142" y="192" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="192" width="324.0" height="11" rx="5.5" fill="#0f9d8c"/><text x="582" y="204.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">75</text><text x="0" y="230.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">开放性</text><rect x="142" y="218" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="218" width="360.0" height="11" rx="5.5" fill="#c4711f"/><text x="582" y="230.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">83</text><text x="0" y="256.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">尽责性</text><rect x="142" y="244" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="244" width="324.0" height="11" rx="5.5" fill="#c4711f"/><text x="582" y="256.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">75</text><text x="0" y="282.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">外向性</text><rect x="142" y="270" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="270" width="144.0" height="11" rx="5.5" fill="#c4711f"/><text x="582" y="282.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">33</text><text x="0" y="308.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">宜人性</text><rect x="142" y="296" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="296" width="288.0" height="11" rx="5.5" fill="#c4711f"/><text x="582" y="308.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">67</text><text x="0" y="334.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">情绪稳定性</text><rect x="142" y="322" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="322" width="288.0" height="11" rx="5.5" fill="#c4711f"/><text x="582" y="334.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">67</text><text x="0" y="360.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">坚毅性</text><rect x="142" y="348" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="348" width="252.0" height="11" rx="5.5" fill="#c4711f"/><text x="582" y="360.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">58</text><text x="0" y="386.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">风险偏好</text><rect x="142" y="374" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="374" width="216.0" height="11" rx="5.5" fill="#c4711f"/><text x="582" y="386.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">50</text><text x="0" y="412.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">现实型 R</text><rect x="142" y="400" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="400" width="324.0" height="11" rx="5.5" fill="#8b5cf6"/><text x="582" y="412.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">75</text><text x="0" y="438.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">研究型 I</text><rect x="142" y="426" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="426" width="360.0" height="11" rx="5.5" fill="#8b5cf6"/><text x="582" y="438.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">83</text><text x="0" y="464.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">艺术型 A</text><rect x="142" y="452" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="452" width="216.0" height="11" rx="5.5" fill="#8b5cf6"/><text x="582" y="464.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">50</text><text x="0" y="490.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">社会型 S</text><rect x="142" y="478" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="478" width="144.0" height="11" rx="5.5" fill="#8b5cf6"/><text x="582" y="490.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">33</text><text x="0" y="516.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">企业型 E</text><rect x="142" y="504" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="504" width="216.0" height="11" rx="5.5" fill="#8b5cf6"/><text x="582" y="516.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">50</text><text x="0" y="542.1" font-size="12.5" font-family="inherit" fill="#1f2430" text-anchor="start">常规型 C</text><rect x="142" y="530" width="432" height="11" rx="5.5" fill="#e3e7ee"/><rect x="142" y="530" width="324.0" height="11" rx="5.5" fill="#8b5cf6"/><text x="582" y="542.1" font-size="12" font-weight="600" font-family="inherit" fill="#5a6472">75</text></svg>
+  </section>
+
+  <section class="panel">
+    <h2>三、职业推荐（加权排序）</h2>
+    <table>
+      <thead><tr><th>#</th><th>职业</th><th>最终</th><th>匹配</th><th>大盘</th><th>霍兰德</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>算法 / 机器学习工程师</td><td><strong>85</strong></td><td>85</td><td>86</td><td>IR</td></tr><tr><td>2</td><td>软件工程师</td><td><strong>85</strong></td><td>88</td><td>72</td><td>IRC</td></tr><tr><td>3</td><td>电子 / 嵌入式工程师</td><td><strong>85</strong></td><td>87</td><td>77</td><td>RIC</td></tr><tr><td>4</td><td>机械 / 结构工程师</td><td><strong>82</strong></td><td>87</td><td>61</td><td>RIC</td></tr><tr><td>5</td><td>数据分析师</td><td><strong>78</strong></td><td>80</td><td>68</td><td>ICR</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <article class="rec">
+  <div class="rec-head">
+    <div class="rank">1</div>
+    <div class="rec-title">
+      <h3>算法 / 机器学习工程师</h3>
+      <div class="meta">信息技术 · 霍兰德 IR（重合 2）</div>
+    </div>
+    <div class="rec-score">
+      <div class="big">85</div><div class="small">最终得分</div>
+    </div>
+  </div>
+  <div class="minibars">
+    <div class="mb"><span>画像匹配</span><div class="track"><i style="width:84.8%;background:#3b6fd4"></i></div><b>85</b></div>
+    <div class="mb"><span>行业大盘</span><div class="track"><i style="width:85.6%;background:#0f9d8c"></i></div><b>86</b></div>
+  </div>
+  <p class="desc">以数学建模和工程实现解决预测、识别、生成等复杂问题。</p>
+  <div class="sect"><div class="sect-t">常见入口</div><p class="desc">硕士及以上学历为主流，数学与编程双重要求高。</p></div>
+  <div class="two">
+    <div class="sect"><div class="sect-t ok">你的优势</div><ul><li>常规型 C 高于该职业要求 15 分</li><li>现实型 R 高于该职业要求 20 分</li></ul></div>
+    <div class="sect"><div class="sect-t gap">待补差距</div><ul><li>数理运算能力 低于该职业要求 45 分</li><li>坚毅性 低于该职业要求 24 分</li></ul></div>
+  </div>
+  <div class="sect"><div class="sect-t">提升建议</div><ul><li>研究型 I（略微不足）：把「好奇」升级为「追问」：遇到结论时习惯性多问一层「这个结论的机制是什么」。</li><li>数理运算能力：恢复数感训练：每周完成 3 组快速计算与百分比心算练习，重点补「比例、增长率、概率」三类。</li><li>坚毅性：降低启动门槛：把长期目标切成「小到不需要意志力就能开始」的最小步骤，靠频率而非强度取胜。</li></ul></div>
+  <div class="sect"><div class="sect-t">可参考的典范</div><div class="rm"><div class="rmn">钱学森<span class="rmf">航天工程 / 系统工程</span></div><div class="rmi">跨学科整合与超长期主义：把数学、工程、组织管理打通的典型路径，适合「研究 + 工程 + 系统统筹」三合一的人。</div></div></div>
+</article><article class="rec">
+  <div class="rec-head">
+    <div class="rank">2</div>
+    <div class="rec-title">
+      <h3>软件工程师</h3>
+      <div class="meta">信息技术 · 霍兰德 IRC（重合 3）</div>
+    </div>
+    <div class="rec-score">
+      <div class="big">85</div><div class="small">最终得分</div>
+    </div>
+  </div>
+  <div class="minibars">
+    <div class="mb"><span>画像匹配</span><div class="track"><i style="width:88.2%;background:#3b6fd4"></i></div><b>88</b></div>
+    <div class="mb"><span>行业大盘</span><div class="track"><i style="width:71.7%;background:#0f9d8c"></i></div><b>72</b></div>
+  </div>
+  <p class="desc">设计、开发与维护软件系统，把需求翻译成可运行的代码。</p>
+  <div class="sect"><div class="sect-t">常见入口</div><p class="desc">计算机相关专业本科为主流入口，也可通过系统化自学 + 项目作品集进入；大厂校招看重算法与工程基础。</p></div>
+  <div class="two">
+    <div class="sect"><div class="sect-t ok">你的优势</div><ul><li>逻辑推理能力 高于该职业要求 18 分</li><li>现实型 R 高于该职业要求 15 分</li><li>组织管理 高于该职业要求 17 分</li></ul></div>
+    <div class="sect"><div class="sect-t gap">待补差距</div><ul><li>数理运算能力 低于该职业要求 28 分</li><li>坚毅性 低于该职业要求 16 分</li></ul></div>
+  </div>
+  <div class="sect"><div class="sect-t">提升建议</div><ul><li>数理运算能力：恢复数感训练：每周完成 3 组快速计算与百分比心算练习，重点补「比例、增长率、概率」三类。</li><li>坚毅性：降低启动门槛：把长期目标切成「小到不需要意志力就能开始」的最小步骤，靠频率而非强度取胜。</li></ul></div>
+  <div class="sect"><div class="sect-t">可参考的典范</div><div class="rm"><div class="rmn">雷军<span class="rmf">科技创业</span></div><div class="rmi">技术底子 + 商业嗅觉：纯技术路径向上走，通常需要在某个阶段补上「商业判断」这一课。</div></div><div class="rm"><div class="rmn">张一鸣<span class="rmf">互联网 / 信息分发</span></div><div class="rmi">理性决策与延迟满足：把「研究型」的分析习惯用在商业决策上，是其被反复提及的思维特征。</div></div></div>
+</article><article class="rec">
+  <div class="rec-head">
+    <div class="rank">3</div>
+    <div class="rec-title">
+      <h3>电子 / 嵌入式工程师</h3>
+      <div class="meta">硬件 / 半导体 · 霍兰德 RIC（重合 3）</div>
+    </div>
+    <div class="rec-score">
+      <div class="big">85</div><div class="small">最终得分</div>
+    </div>
+  </div>
+  <div class="minibars">
+    <div class="mb"><span>画像匹配</span><div class="track"><i style="width:86.5%;background:#3b6fd4"></i></div><b>87</b></div>
+    <div class="mb"><span>行业大盘</span><div class="track"><i style="width:77.0%;background:#0f9d8c"></i></div><b>77</b></div>
+  </div>
+  <p class="desc">在软硬件交界处工作，涉及电路、驱动、实时系统与产品联调。</p>
+  <div class="sect"><div class="sect-t">常见入口</div><p class="desc">电子/自动化/通信等专业本科，硬件经验与项目积累关键。</p></div>
+  <div class="two">
+    <div class="sect"><div class="sect-t ok">你的优势</div><ul><li>逻辑推理能力 高于该职业要求 18 分</li><li>组织管理 高于该职业要求 19 分</li></ul></div>
+    <div class="sect"><div class="sect-t gap">待补差距</div><ul><li>数理运算能力 低于该职业要求 33 分</li><li>坚毅性 低于该职业要求 20 分</li></ul></div>
+  </div>
+  <div class="sect"><div class="sect-t">提升建议</div><ul><li>技术实操（略微不足）：选一门与你目标岗位直接相关的工具，用「做一个小项目」而非「看完教程」作为完成标准。</li><li>现实型 R（略微不足）：多接触实物场景：去现场、车间、实验室看一次，真实感受比想象更可靠。</li><li>尽责性（略微不足）：用外置系统替代记性：把所有待办写进同一个清单，并给每项设截止日期与下一步动作。</li></ul></div>
+  <div class="sect"><div class="sect-t">可参考的典范</div><div class="rm"><div class="rmn">袁隆平<span class="rmf">农业科研</span></div><div class="rmi">田间地头的科研：把「动手实践」和「科学方法」结合得极紧，说明研究型不等于只坐实验室。</div></div><div class="rm"><div class="rmn">钱学森<span class="rmf">航天工程 / 系统工程</span></div><div class="rmi">跨学科整合与超长期主义：把数学、工程、组织管理打通的典型路径，适合「研究 + 工程 + 系统统筹」三合一的人。</div></div></div>
+</article><article class="rec">
+  <div class="rec-head">
+    <div class="rank">4</div>
+    <div class="rec-title">
+      <h3>机械 / 结构工程师</h3>
+      <div class="meta">制造 / 工程 · 霍兰德 RIC（重合 3）</div>
+    </div>
+    <div class="rec-score">
+      <div class="big">82</div><div class="small">最终得分</div>
+    </div>
+  </div>
+  <div class="minibars">
+    <div class="mb"><span>画像匹配</span><div class="track"><i style="width:87.2%;background:#3b6fd4"></i></div><b>87</b></div>
+    <div class="mb"><span>行业大盘</span><div class="track"><i style="width:61.2%;background:#0f9d8c"></i></div><b>61</b></div>
+  </div>
+  <p class="desc">负责机械结构的设计、仿真、制造与现场调试。</p>
+  <div class="sect"><div class="sect-t">常见入口</div><p class="desc">机械/车辆/航空航天等工科专业本科。</p></div>
+  <div class="two">
+    <div class="sect"><div class="sect-t ok">你的优势</div><ul><li>逻辑推理能力 高于该职业要求 20 分</li><li>组织管理 高于该职业要求 13 分</li></ul></div>
+    <div class="sect"><div class="sect-t gap">待补差距</div><ul><li>空间想象能力 低于该职业要求 16 分</li><li>数理运算能力 低于该职业要求 33 分</li><li>坚毅性 低于该职业要求 18 分</li></ul></div>
+  </div>
+  <div class="sect"><div class="sect-t">提升建议</div><ul><li>空间想象能力：训练空间表征：动手做一次折叠/装配类任务，或练习看图还原三维结构。</li><li>现实型 R（略微不足）：多接触实物场景：去现场、车间、实验室看一次，真实感受比想象更可靠。</li><li>尽责性（略微不足）：用外置系统替代记性：把所有待办写进同一个清单，并给每项设截止日期与下一步动作。</li></ul></div>
+  <div class="sect"><div class="sect-t">可参考的典范</div><div class="rm"><div class="rmn">袁隆平<span class="rmf">农业科研</span></div><div class="rmi">田间地头的科研：把「动手实践」和「科学方法」结合得极紧，说明研究型不等于只坐实验室。</div></div></div>
+</article><article class="rec">
+  <div class="rec-head">
+    <div class="rank">5</div>
+    <div class="rec-title">
+      <h3>数据分析师</h3>
+      <div class="meta">信息技术 · 霍兰德 ICR（重合 3）</div>
+    </div>
+    <div class="rec-score">
+      <div class="big">78</div><div class="small">最终得分</div>
+    </div>
+  </div>
+  <div class="minibars">
+    <div class="mb"><span>画像匹配</span><div class="track"><i style="width:80.5%;background:#3b6fd4"></i></div><b>80</b></div>
+    <div class="mb"><span>行业大盘</span><div class="track"><i style="width:68.5%;background:#0f9d8c"></i></div><b>68</b></div>
+  </div>
+  <p class="desc">用统计与可视化方法从数据中提取结论，支撑业务决策。</p>
+  <div class="sect"><div class="sect-t">常见入口</div><p class="desc">统计/数学/经济/计算机等专业，或掌握 SQL + Python + 可视化工具后转行。</p></div>
+  <div class="two">
+    <div class="sect"><div class="sect-t ok">你的优势</div><ul><li>逻辑推理能力 高于该职业要求 22 分</li><li>开放性 高于该职业要求 13 分</li><li>语言理解能力 高于该职业要求 34 分</li><li>组织管理 高于该职业要求 15 分</li></ul></div>
+    <div class="sect"><div class="sect-t gap">待补差距</div><ul><li>数理运算能力 低于该职业要求 39 分</li><li>沟通协作 低于该职业要求 16 分</li></ul></div>
+  </div>
+  <div class="sect"><div class="sect-t">提升建议</div><ul><li>数理运算能力：恢复数感训练：每周完成 3 组快速计算与百分比心算练习，重点补「比例、增长率、概率」三类。</li><li>坚毅性（略微不足）：降低启动门槛：把长期目标切成「小到不需要意志力就能开始」的最小步骤，靠频率而非强度取胜。</li><li>沟通协作：练习低风险社交：每周主动与一位不熟的同事或同行聊 10 分钟，话题围绕对方的工作展开。</li></ul></div>
+  <div class="sect"><div class="sect-t">可参考的典范</div><div class="rm"><div class="rmn">张一鸣<span class="rmf">互联网 / 信息分发</span></div><div class="rmi">理性决策与延迟满足：把「研究型」的分析习惯用在商业决策上，是其被反复提及的思维特征。</div></div></div>
+</article>
+
+  
+
+  <footer>
+    本报告由 career-compass 依据自评问卷与规则模型生成。<br>
+    题库与职业画像来自公开资料整理与专家赋值，结果仅供参考，<strong>不构成职业决策或投资建议</strong>。<br>
+    部署后的页面为公开可访问，请勿在其中填入真实敏感信息。
+  </footer>
+</div>
+</body>
+</html>

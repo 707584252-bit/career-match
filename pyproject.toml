@@ -1,0 +1,66 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "career-compass"
+version = "1.0.0"
+description = "职业能力测评与加权职业推荐引擎：21 维度题库 + 霍兰德/Big Five 理论 + 行业大盘修正 + DeepSeek 个性化解读"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "career-compass contributors" }]
+keywords = ["career", "assessment", "holland", "riasec", "big-five", "psychometrics", "recommendation"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Chinese (Simplified)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Education :: Testing",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.5"]
+# 只有在你更习惯用官方 SDK 时才需要；本项目默认使用标准库直连
+openai-sdk = ["openai>=1.30"]
+
+[project.urls]
+Homepage = "https://github.com/yourname/career-compass"
+Repository = "https://github.com/yourname/career-compass"
+Issues = "https://github.com/yourname/career-compass/issues"
+Changelog = "https://github.com/yourname/career-compass/blob/main/CHANGELOG.md"
+
+[project.scripts]
+career-compass = "career_compass.cli:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+# data/ 目录位于仓库根目录，随包分发时一并包含（见 MANIFEST.in）
+career_compass = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501", "B008"]

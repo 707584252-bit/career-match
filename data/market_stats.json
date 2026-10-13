@@ -1,0 +1,55 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "note": "行业大盘数据的「可替换层」。当前数值为 0-1 的示例性估计，用于让推荐算法跑通并展示修正逻辑，不代表任何官方统计口径。",
+    "how_to_replace": [
+      "outlook（景气度）：可替换为国家统计局 / 人社部发布的行业用人需求指数，或招聘平台岗位供需比，归一化到 0-1。",
+      "growth（增长性）：可替换为行业协会或券商研报给出的营收/就业 CAGR，映射到 0-1。",
+      "ai_risk（自动化暴露度）：可替换为岗位任务可自动化比例的研究结论（如基于任务分解的暴露度评分），映射到 0-1。",
+      "替换后请同步更新 _meta.sources 字段，保持数据可溯源。"
+    ],
+    "sources": [
+      "O*NET OnLine - Occupation Interest / Ability / Work Activity profiles (U.S. DOL)",
+      "Holland, J. L. - Making Vocational Choices (RIASEC 职业代码)",
+      "《中华人民共和国职业分类大典（2022 年版）》",
+      "国家统计局 - 国民经济行业分类与就业人员统计",
+      "人社部 - 全国招聘求职 100 个短缺职业排行（季度）",
+      "示例性估计值：由本项目作者按行业常识赋值，仅用于演示算法链路"
+    ],
+    "disclaimer": "本文件数据仅用于演示算法链路，不构成任何就业、薪酬或投资建议。请勿据此做重大职业决策。"
+  },
+
+  "weights": {
+    "outlook": 0.45,
+    "growth": 0.25,
+    "ai_risk_inverse": 0.30
+  },
+
+  "market": {
+    "software_engineer":   { "outlook": 0.86, "growth": 0.72, "ai_risk": 0.50, "salary_band": "¥15–45万/年（一线城市，视级别）", "note": "需求总量大，但初级岗位的自动化暴露度在上升，中高级仍紧缺。" },
+    "data_analyst":        { "outlook": 0.80, "growth": 0.76, "ai_risk": 0.55, "salary_band": "¥12–35万/年", "note": "纯取数型岗被工具替代明显，业务理解型分析师仍稳。" },
+    "ml_engineer":         { "outlook": 0.88, "growth": 0.88, "ai_risk": 0.20, "salary_band": "¥25–70万/年", "note": "供给严重不足的高门槛赛道，学历门槛高。" },
+    "product_manager":     { "outlook": 0.72, "growth": 0.60, "ai_risk": 0.40, "salary_band": "¥15–50万/年", "note": "从「功能型」向「业务型」转型，纯执行型 PM 需求收缩。" },
+    "physician":           { "outlook": 0.90, "growth": 0.62, "ai_risk": 0.15, "salary_band": "¥12–60万/年（视科室与职称）", "note": "强准入壁垒，抗周期；培养周期长、前期收入低。" },
+    "counselor":           { "outlook": 0.74, "growth": 0.82, "ai_risk": 0.12, "salary_band": "¥8–40万/年（个体执业差异极大）", "note": "需求增长快，但执业资质与督导成本高，收入两极分化。" },
+    "teacher":             { "outlook": 0.70, "growth": 0.35, "ai_risk": 0.25, "salary_band": "¥8–25万/年（视地区与学段）", "note": "出生人口下降带来长期结构性收缩，稳定性仍高。" },
+    "lawyer":              { "outlook": 0.68, "growth": 0.55, "ai_risk": 0.45, "salary_band": "¥10–80万/年（头部与尾部差距极大）", "note": "法律检索类工作被 AI 分流，诉讼与商务谈判能力更值钱。" },
+    "accountant":          { "outlook": 0.62, "growth": 0.35, "ai_risk": 0.72, "salary_band": "¥8–30万/年", "note": "基础核算高度自动化，向管理会计/税务筹划迁移是主要出路。" },
+    "consultant":          { "outlook": 0.70, "growth": 0.55, "ai_risk": 0.40, "salary_band": "¥20–60万/年", "note": "高强度高回报，行业景气与宏观周期强相关。" },
+    "marketing":           { "outlook": 0.74, "growth": 0.58, "ai_risk": 0.55, "salary_band": "¥10–40万/年", "note": "执行层被工具压缩，策略与内容创意层价值上升。" },
+    "journalist_creator":  { "outlook": 0.76, "growth": 0.70, "ai_risk": 0.50, "salary_band": "收入分布极长尾，中位数偏低", "note": "门槛低、竞争烈，头部效应极端；建议作为副业验证后再 all-in。" },
+    "ux_designer":         { "outlook": 0.70, "growth": 0.58, "ai_risk": 0.60, "salary_band": "¥12–45万/年", "note": "出图类工作被 AI 快速替代，交互逻辑与业务理解能力是关键护城河。" },
+    "architect":           { "outlook": 0.52, "growth": 0.30, "ai_risk": 0.35, "salary_band": "¥10–35万/年", "note": "与地产周期强绑定，行业处于调整期；注册资质含金量高。" },
+    "mechanical_engineer": { "outlook": 0.66, "growth": 0.48, "ai_risk": 0.35, "salary_band": "¥10–30万/年", "note": "新能源/机器人方向结构性机会明显，传统方向平淡。" },
+    "embedded_engineer":   { "outlook": 0.80, "growth": 0.74, "ai_risk": 0.25, "salary_band": "¥15–40万/年", "note": "半导体与智能硬件国产化带动，软硬结合岗位壁垒高。" },
+    "researcher":          { "outlook": 0.58, "growth": 0.40, "ai_risk": 0.18, "salary_band": "¥10–40万/年（视平台与帽子）", "note": "非升即走压力大，长期回报高度依赖平台与领域选择。" },
+    "hr":                  { "outlook": 0.60, "growth": 0.35, "ai_risk": 0.58, "salary_band": "¥8–30万/年", "note": "事务性 HR 被系统替代，HRBP / 组织发展方向仍有机会。" },
+    "financial_analyst":   { "outlook": 0.62, "growth": 0.45, "ai_risk": 0.62, "salary_band": "¥15–60万/年", "note": "卖方研究承压，量化与产业研究能力更有溢价。" },
+    "sales_manager":       { "outlook": 0.78, "growth": 0.55, "ai_risk": 0.30, "salary_band": "底薪 + 提成，波动大", "note": "抗自动化，但收入方差极大，行业选择决定天花板。" },
+    "nurse":               { "outlook": 0.92, "growth": 0.68, "ai_risk": 0.12, "salary_band": "¥8–20万/年", "note": "长期供不应求，强度大、轮班制，出国路径（如注册护士）值得关注。" },
+    "social_worker":       { "outlook": 0.64, "growth": 0.66, "ai_risk": 0.10, "salary_band": "¥6–15万/年", "note": "社会价值高、薪酬偏低，政策投入是核心变量。" },
+    "public_admin":        { "outlook": 0.76, "growth": 0.22, "ai_risk": 0.25, "salary_band": "¥8–25万/年（视地区职级）", "note": "竞争极其激烈，稳定性与福利是主要吸引力。" },
+    "sports_coach":        { "outlook": 0.70, "growth": 0.60, "ai_risk": 0.10, "salary_band": "¥8–30万/年（视项目与级别，头部差异极大）", "note": "体教融合与青少年体育培训带动需求；职业运动员路径极窄，教练与培训师是更现实的落点。" },
+    "entrepreneur":        { "outlook": 0.66, "growth": 0.60, "ai_risk": 0.20, "salary_band": "结果高度不确定", "note": "失败率是最大变量；建议先用低成本方式验证，再决定是否全力投入。" }
+  }
+}

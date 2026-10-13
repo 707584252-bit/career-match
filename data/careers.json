@@ -1,0 +1,386 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "note": "职业画像为「岗位能力要求（Job Analysis）的专家赋值」，设计时综合参照 O*NET 职业能力/兴趣/工作活动条目、Holland RIASEC 职业代码手册、《中华人民共和国职业分类大典》职业结构，以及主流招聘平台的岗位描述。数值为 0-100 的标准化要求强度，属于理性估计而非精确测量值，可按你的行业一手数据覆盖（详见 README「如何替换为真实数据」）。",
+    "profile_semantics": "profile 为稀疏向量：只列出该职业真正产生区分度的维度，未列出的维度在匹配计算中不参与（组权重会在已列维度间重新归一化），避免「未指定」被误当成「要求中等」。",
+    "holland_semantics": "霍兰德三字代码，按兴趣强度降序排列。"
+  },
+
+  "careers": [
+    {
+      "id": "software_engineer",
+      "name": "软件工程师",
+      "category": "信息技术",
+      "holland": "IRC",
+      "summary": "设计、开发与维护软件系统，把需求翻译成可运行的代码。",
+      "entry_path": "计算机相关专业本科为主流入口，也可通过系统化自学 + 项目作品集进入；大厂校招看重算法与工程基础。",
+      "profile": {
+        "academic.logic": 82, "academic.numeric": 75, "academic.spatial": 62,
+        "skill.tech": 88, "skill.creative": 62, "skill.manage": 58,
+        "trait.openness": 72, "trait.conscientiousness": 78, "trait.grit": 74, "trait.stability": 66,
+        "interest.realistic": 60, "interest.investigative": 85, "interest.conventional": 66
+      },
+      "role_model_ids": ["lei_jun", "zhang_yiming"]
+    },
+    {
+      "id": "data_analyst",
+      "name": "数据分析师",
+      "category": "信息技术",
+      "holland": "ICR",
+      "summary": "用统计与可视化方法从数据中提取结论，支撑业务决策。",
+      "entry_path": "统计/数学/经济/计算机等专业，或掌握 SQL + Python + 可视化工具后转行。",
+      "profile": {
+        "academic.logic": 78, "academic.numeric": 86, "academic.verbal": 66,
+        "skill.tech": 78, "skill.social": 58, "skill.manage": 60,
+        "trait.openness": 70, "trait.conscientiousness": 78, "trait.grit": 68,
+        "interest.realistic": 45, "interest.investigative": 88, "interest.conventional": 78
+      },
+      "role_model_ids": ["zhang_yiming"]
+    },
+    {
+      "id": "ml_engineer",
+      "name": "算法 / 机器学习工程师",
+      "category": "信息技术",
+      "holland": "IR",
+      "summary": "以数学建模和工程实现解决预测、识别、生成等复杂问题。",
+      "entry_path": "硕士及以上学历为主流，数学与编程双重要求高。",
+      "profile": {
+        "academic.logic": 92, "academic.numeric": 92, "academic.spatial": 66,
+        "skill.tech": 88, "skill.creative": 70,
+        "trait.openness": 82, "trait.conscientiousness": 78, "trait.grit": 82,
+        "interest.realistic": 55, "interest.investigative": 95, "interest.conventional": 60
+      },
+      "role_model_ids": ["qian_xuesen"]
+    },
+    {
+      "id": "product_manager",
+      "name": "产品经理",
+      "category": "互联网 / 产品",
+      "holland": "ESA",
+      "summary": "定义产品要解决的问题，协调设计、研发、运营把产品做出来并跑通。",
+      "entry_path": "不限专业，看重结构化思维、用户洞察与跨部门推动力。",
+      "profile": {
+        "academic.logic": 75, "academic.numeric": 68, "academic.verbal": 82,
+        "skill.tech": 62, "skill.creative": 78, "skill.social": 84, "skill.manage": 86,
+        "trait.openness": 82, "trait.conscientiousness": 76, "trait.extraversion": 78, "trait.agreeableness": 70, "trait.risk": 70,
+        "interest.artistic": 70, "interest.social": 75, "interest.enterprising": 88
+      },
+      "role_model_ids": ["zhang_yiming", "lei_jun"]
+    },
+    {
+      "id": "physician",
+      "name": "临床医生",
+      "category": "医疗健康",
+      "holland": "ISC",
+      "summary": "依据医学知识与临床证据诊断治疗疾病，长期与患者直接接触。",
+      "entry_path": "医学专业学历 + 执业医师资格 + 规范化培训，学制与准入周期长。",
+      "profile": {
+        "academic.logic": 82, "academic.numeric": 78, "academic.verbal": 72, "academic.spatial": 68,
+        "skill.tech": 68, "skill.social": 82, "skill.manage": 66,
+        "trait.conscientiousness": 90, "trait.agreeableness": 80, "trait.stability": 86, "trait.grit": 90,
+        "interest.realistic": 62, "interest.investigative": 82, "interest.social": 80, "interest.conventional": 72
+      },
+      "role_model_ids": ["tu_youyou"]
+    },
+    {
+      "id": "counselor",
+      "name": "心理咨询师",
+      "category": "医疗健康",
+      "holland": "SIA",
+      "summary": "通过专业会谈帮助来访者理解并改善情绪、关系与行为模式。",
+      "entry_path": "心理学相关专业 + 系统长程培训 + 个案督导时长积累。",
+      "profile": {
+        "academic.verbal": 85, "academic.logic": 68,
+        "skill.creative": 66, "skill.social": 92, "skill.manage": 56,
+        "trait.openness": 84, "trait.conscientiousness": 74, "trait.agreeableness": 88, "trait.stability": 86, "trait.grit": 76,
+        "interest.investigative": 78, "interest.artistic": 62, "interest.social": 96
+      },
+      "role_model_ids": ["luo_xiang"]
+    },
+    {
+      "id": "teacher",
+      "name": "中小学教师",
+      "category": "教育",
+      "holland": "SAE",
+      "summary": "承担学科教学、班级管理与学生成长引导工作。",
+      "entry_path": "师范类或对应学科专业 + 教师资格证 + 教师招聘考试。",
+      "profile": {
+        "academic.verbal": 84, "academic.logic": 68, "academic.numeric": 62,
+        "skill.creative": 72, "skill.social": 90, "skill.manage": 74,
+        "trait.conscientiousness": 82, "trait.extraversion": 78, "trait.agreeableness": 86, "trait.stability": 78, "trait.grit": 78,
+        "interest.artistic": 66, "interest.social": 92, "interest.enterprising": 60
+      },
+      "role_model_ids": ["zhang_guimei"]
+    },
+    {
+      "id": "lawyer",
+      "name": "律师",
+      "category": "法律",
+      "holland": "EIC",
+      "summary": "以法律专业能力为当事人争取权益，核心工作包括检索、论证与出庭。",
+      "entry_path": "法学专业 + 法律职业资格考试 + 实习转执业。",
+      "profile": {
+        "academic.logic": 88, "academic.verbal": 90, "academic.numeric": 62,
+        "skill.creative": 60, "skill.social": 84, "skill.manage": 74,
+        "trait.conscientiousness": 84, "trait.extraversion": 78, "trait.stability": 82, "trait.grit": 86, "trait.risk": 62,
+        "interest.investigative": 78, "interest.social": 70, "interest.enterprising": 84, "interest.conventional": 80
+      },
+      "role_model_ids": ["luo_xiang"]
+    },
+    {
+      "id": "accountant",
+      "name": "会计师 / 审计师",
+      "category": "财务",
+      "holland": "CIE",
+      "summary": "负责核算、报表、税务与合规审计，对准确性和规范性要求极高。",
+      "entry_path": "会计/审计/财务专业 + 初级/中级会计职称或 CPA 等资质。",
+      "profile": {
+        "academic.numeric": 90, "academic.logic": 74,
+        "skill.tech": 56, "skill.manage": 70,
+        "trait.openness": 48, "trait.conscientiousness": 92, "trait.stability": 80, "trait.grit": 80, "trait.risk": 28,
+        "interest.investigative": 62, "interest.conventional": 92
+      },
+      "role_model_ids": ["inamori_kazuo"]
+    },
+    {
+      "id": "consultant",
+      "name": "管理咨询顾问",
+      "category": "咨询 / 专业服务",
+      "holland": "EIC",
+      "summary": "在短周期内拆解企业问题、给出可落地的解决方案并推动落地。",
+      "entry_path": "名校本科/硕士为主流，不限专业，看重案例分析与抗压能力。",
+      "profile": {
+        "academic.logic": 90, "academic.numeric": 82, "academic.verbal": 86,
+        "skill.creative": 75, "skill.social": 84, "skill.manage": 88,
+        "trait.openness": 82, "trait.conscientiousness": 84, "trait.extraversion": 80, "trait.stability": 84, "trait.grit": 86, "trait.risk": 65,
+        "interest.investigative": 82, "interest.enterprising": 90
+      },
+      "role_model_ids": ["inamori_kazuo", "dong_mingzhu"]
+    },
+    {
+      "id": "marketing",
+      "name": "市场营销 / 品牌",
+      "category": "市场 / 运营",
+      "holland": "EAS",
+      "summary": "通过内容、投放与活动影响用户认知，把注意力转化为业务转化。",
+      "entry_path": "不限专业，作品集与数据结果比学历更有说服力。",
+      "profile": {
+        "academic.verbal": 82, "academic.logic": 64,
+        "skill.creative": 88, "skill.social": 86, "skill.manage": 74,
+        "trait.openness": 86, "trait.extraversion": 86, "trait.risk": 74, "trait.grit": 72,
+        "interest.artistic": 88, "interest.social": 72, "interest.enterprising": 90
+      },
+      "role_model_ids": ["dong_mingzhu"]
+    },
+    {
+      "id": "journalist_creator",
+      "name": "记者 / 内容创作者",
+      "category": "内容 / 传媒",
+      "holland": "AIE",
+      "summary": "以调查、采访或持续输出内容获取注意力与影响力。",
+      "entry_path": "新闻传播/中文等专业，或凭内容作品直接建立个人品牌。",
+      "profile": {
+        "academic.verbal": 92, "academic.logic": 70,
+        "skill.creative": 90, "skill.social": 74, "skill.manage": 56,
+        "trait.openness": 90, "trait.extraversion": 70, "trait.grit": 80, "trait.risk": 66,
+        "interest.investigative": 75, "interest.artistic": 92, "interest.enterprising": 66
+      },
+      "role_model_ids": ["zhang_yimou", "rowling"]
+    },
+    {
+      "id": "ux_designer",
+      "name": "UI / UX 设计师",
+      "category": "设计",
+      "holland": "AIS",
+      "summary": "设计产品的信息结构、交互流程与视觉表达，兼顾美感与可用性。",
+      "entry_path": "设计类专业或系统训练，作品集是核心门槛。",
+      "profile": {
+        "academic.spatial": 88, "academic.verbal": 68, "academic.logic": 62,
+        "skill.tech": 70, "skill.creative": 92, "skill.social": 70,
+        "trait.openness": 88, "trait.conscientiousness": 74, "trait.agreeableness": 70,
+        "interest.realistic": 45, "interest.investigative": 62, "interest.artistic": 95, "interest.social": 62
+      },
+      "role_model_ids": ["zhang_yimou"]
+    },
+    {
+      "id": "architect",
+      "name": "建筑师",
+      "category": "建筑 / 工程",
+      "holland": "AIR",
+      "summary": "把功能需求、结构约束与美学统一为一套可建造的空间方案。",
+      "entry_path": "建筑学专业（多为五年制）+ 注册建筑师考试。",
+      "profile": {
+        "academic.spatial": 92, "academic.logic": 78, "academic.numeric": 72,
+        "skill.tech": 72, "skill.creative": 86, "skill.manage": 70,
+        "trait.openness": 84, "trait.conscientiousness": 84, "trait.grit": 82,
+        "interest.realistic": 72, "interest.investigative": 75, "interest.artistic": 86
+      },
+      "role_model_ids": ["zhang_yimou"]
+    },
+    {
+      "id": "mechanical_engineer",
+      "name": "机械 / 结构工程师",
+      "category": "制造 / 工程",
+      "holland": "RIC",
+      "summary": "负责机械结构的设计、仿真、制造与现场调试。",
+      "entry_path": "机械/车辆/航空航天等工科专业本科。",
+      "profile": {
+        "academic.logic": 80, "academic.numeric": 80, "academic.spatial": 86,
+        "skill.tech": 86, "skill.creative": 62, "skill.manage": 62,
+        "trait.conscientiousness": 82, "trait.stability": 72, "trait.grit": 76,
+        "interest.realistic": 86, "interest.investigative": 72, "interest.conventional": 72
+      },
+      "role_model_ids": ["yuan_longping"]
+    },
+    {
+      "id": "embedded_engineer",
+      "name": "电子 / 嵌入式工程师",
+      "category": "硬件 / 半导体",
+      "holland": "RIC",
+      "summary": "在软硬件交界处工作，涉及电路、驱动、实时系统与产品联调。",
+      "entry_path": "电子/自动化/通信等专业本科，硬件经验与项目积累关键。",
+      "profile": {
+        "academic.logic": 82, "academic.numeric": 80, "academic.spatial": 78,
+        "skill.tech": 90, "skill.manage": 56,
+        "trait.conscientiousness": 82, "trait.stability": 72, "trait.grit": 78,
+        "interest.realistic": 84, "interest.investigative": 78, "interest.conventional": 70
+      },
+      "role_model_ids": ["yuan_longping", "qian_xuesen"]
+    },
+    {
+      "id": "researcher",
+      "name": "科研人员（高校 / 研究所）",
+      "category": "科研",
+      "holland": "IAR",
+      "summary": "以提出问题、设计实验、发表成果为职业主线的长期研究路径。",
+      "entry_path": "博士学历为主流准入，博士后经历普遍。",
+      "profile": {
+        "academic.logic": 90, "academic.numeric": 82, "academic.verbal": 74,
+        "skill.tech": 70, "skill.creative": 76, "skill.manage": 56,
+        "trait.openness": 92, "trait.conscientiousness": 84, "trait.grit": 92, "trait.stability": 74,
+        "interest.realistic": 56, "interest.investigative": 95, "interest.artistic": 66
+      },
+      "role_model_ids": ["qian_xuesen", "tu_youyou", "yuan_longping"]
+    },
+    {
+      "id": "hr",
+      "name": "人力资源",
+      "category": "职能 / 管理",
+      "holland": "SEC",
+      "summary": "负责招聘、培训、绩效与员工关系，是企业与人的连接点。",
+      "entry_path": "不限专业，人力资源、心理学、管理学背景有优势。",
+      "profile": {
+        "academic.verbal": 78, "academic.logic": 60,
+        "skill.creative": 56, "skill.social": 90, "skill.manage": 80,
+        "trait.conscientiousness": 78, "trait.extraversion": 78, "trait.agreeableness": 86, "trait.stability": 80,
+        "interest.social": 88, "interest.enterprising": 72, "interest.conventional": 72
+      },
+      "role_model_ids": ["inamori_kazuo"]
+    },
+    {
+      "id": "financial_analyst",
+      "name": "金融分析师",
+      "category": "金融",
+      "holland": "ICE",
+      "summary": "做估值建模、行业与公司研究，为投资决策提供依据。",
+      "entry_path": "金融/经济/数学专业为主流，CFA 等资质加分。",
+      "profile": {
+        "academic.logic": 86, "academic.numeric": 92, "academic.verbal": 70,
+        "skill.tech": 62, "skill.social": 62, "skill.manage": 68,
+        "trait.conscientiousness": 86, "trait.stability": 82, "trait.grit": 84, "trait.risk": 66,
+        "interest.investigative": 82, "interest.enterprising": 78, "interest.conventional": 86
+      },
+      "role_model_ids": ["lei_jun"]
+    },
+    {
+      "id": "sales_manager",
+      "name": "销售 / 客户经理",
+      "category": "销售",
+      "holland": "ESC",
+      "summary": "以业绩为直接标尺，负责开拓客户、促成成交与维护长期关系。",
+      "entry_path": "不限专业，行业知识与抗压能力是主要变量。",
+      "profile": {
+        "academic.verbal": 86, "academic.logic": 60,
+        "skill.social": 92, "skill.manage": 80, "skill.creative": 62,
+        "trait.conscientiousness": 74, "trait.extraversion": 92, "trait.stability": 82, "trait.grit": 86, "trait.risk": 82,
+        "interest.social": 78, "interest.enterprising": 95
+      },
+      "role_model_ids": ["dong_mingzhu"]
+    },
+    {
+      "id": "nurse",
+      "name": "护士",
+      "category": "医疗健康",
+      "holland": "SCR",
+      "summary": "承担临床护理、病情观察与患者沟通，是高强度的照护型岗位。",
+      "entry_path": "护理专业 + 护士执业资格。",
+      "profile": {
+        "academic.verbal": 66, "academic.logic": 56,
+        "skill.tech": 58, "skill.social": 90, "skill.manage": 62,
+        "trait.conscientiousness": 88, "trait.agreeableness": 88, "trait.stability": 86, "trait.grit": 84,
+        "interest.realistic": 66, "interest.social": 92, "interest.conventional": 70
+      },
+      "role_model_ids": ["zhang_guimei"]
+    },
+    {
+      "id": "social_worker",
+      "name": "社会工作者 / 公益从业者",
+      "category": "公共服务",
+      "holland": "SIA",
+      "summary": "为弱势群体提供支持与资源链接，推动社区与社会服务改善。",
+      "entry_path": "社会工作专业 + 社会工作者职业资格，公益机构亦可入门。",
+      "profile": {
+        "academic.verbal": 80, "academic.logic": 58,
+        "skill.creative": 56, "skill.social": 92, "skill.manage": 62,
+        "trait.openness": 76, "trait.agreeableness": 92, "trait.stability": 80, "trait.grit": 84,
+        "interest.investigative": 62, "interest.social": 95, "interest.artistic": 56
+      },
+      "role_model_ids": ["zhang_guimei"]
+    },
+    {
+      "id": "public_admin",
+      "name": "公务员 / 公共管理",
+      "category": "公共部门",
+      "holland": "CSE",
+      "summary": "在公共部门承担政策执行、公共服务与事务性管理。",
+      "entry_path": "公务员考试（行测 + 申论 + 面试）为主要入口，专业限制因岗位而异。",
+      "profile": {
+        "academic.logic": 74, "academic.verbal": 82, "academic.numeric": 66,
+        "skill.social": 72, "skill.manage": 80,
+        "trait.openness": 52, "trait.conscientiousness": 90, "trait.agreeableness": 76, "trait.stability": 84, "trait.risk": 30,
+        "interest.social": 70, "interest.enterprising": 62, "interest.conventional": 90
+      },
+      "role_model_ids": ["zhang_guimei"]
+    },
+    {
+      "id": "sports_coach",
+      "name": "体育教练 / 运动训练师",
+      "category": "体育 / 健康",
+      "holland": "RSE",
+      "summary": "把运动技能与体能训练方法转化为可执行的训练计划，并对训练对象的状态负责。",
+      "entry_path": "体育院校相关专业，或高水平运动员转教练；青少年培训与健身教练是更宽的入口。",
+      "profile": {
+        "academic.spatial": 72, "academic.logic": 62,
+        "skill.tech": 62, "skill.social": 86, "skill.manage": 88,
+        "trait.conscientiousness": 82, "trait.extraversion": 78, "trait.stability": 90, "trait.grit": 92,
+        "interest.realistic": 88, "interest.social": 82, "interest.enterprising": 78
+      },
+      "role_model_ids": ["lang_ping"]
+    },
+    {
+      "id": "entrepreneur",
+      "name": "创业者 / 企业主",
+      "category": "创业 / 商业",
+      "holland": "EIS",
+      "summary": "从 0 到 1 组织资源、承担风险、把一件事真正做成生意。",
+      "entry_path": "无固定路径，行业认知、资源整合与承受失败的能力是关键。",
+      "profile": {
+        "academic.logic": 78, "academic.numeric": 74, "academic.verbal": 82,
+        "skill.tech": 56, "skill.creative": 84, "skill.social": 86, "skill.manage": 92,
+        "trait.openness": 92, "trait.extraversion": 86, "trait.stability": 88, "trait.grit": 96, "trait.risk": 92,
+        "interest.investigative": 66, "interest.enterprising": 96, "interest.social": 62
+      },
+      "role_model_ids": ["lei_jun", "zhang_yiming", "dong_mingzhu"]
+    }
+  ]
+}
