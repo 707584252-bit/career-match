@@ -14,6 +14,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -61,6 +62,17 @@ def _embedded_data(html: str) -> dict:
     m = re.search(r"var DATA = (\{.*?\});\n", html, re.S)
     assert m, "页面里找不到 DATA 载荷"
     return json.loads(m.group(1).replace("\\u003c", "<"))
+
+
+def _inline_script(html: str) -> str:
+    """抠出页面唯一的内联脚本块。
+
+    题面里的 ``<`` 已被转义成 ``\\u003c``，所以脚本体内不会出现
+    ``</script>``，非贪婪匹配是安全的。
+    """
+    blocks = re.findall(r"<script>(.*?)</script>", html, re.S)
+    assert len(blocks) == 1, f"预期只有一个内联脚本块，实际找到 {len(blocks)} 个"
+    return blocks[0]
 
 
 # ---------------------------------------------------------------------------
@@ -165,8 +177,71 @@ def test_html_escapes_script_tags_in_question_text():
 
 
 def test_html_exposes_progress_and_export_controls(html):
-    for needle in ("btn-export", "btn-copy", "btn-jump", "barfill", "已答"):
+    for needle in ("btn-export", "btn-copy", "btn-jump", "btn-raw", "barfill", "已答"):
         assert needle in html, f"页面缺少 {needle}"
+
+
+# ---------------------------------------------------------------------------
+# 导出被拦截时的兜底（嵌入预览窗口就是这种场景）
+# ---------------------------------------------------------------------------
+
+
+def test_html_warns_when_embedded_in_an_iframe(html):
+    """嵌入预览框里浏览器会拦下载与剪贴板，页面必须自己说出来。
+
+    否则用户点了「导出作答文件」毫无反应，只会认为按钮坏了——
+    而实际上作答就存在这个窗口里，还有救。
+    """
+    for needle in ("iframeWarn", "warnDetach", "warnRaw", "window.self !== window.top"):
+        assert needle in html, f"缺少嵌入预览的提示逻辑：{needle}"
+
+
+def test_html_offers_manual_copy_fallback(html):
+    """下载与剪贴板都失败时，必须有一条只靠「全选 + Ctrl+C」就能走通的路。"""
+    for needle in ("rawModal", "rawText", "rawSelect", "rawCopy", "showRaw", "selectRaw"):
+        assert needle in html, f"缺少手动复制兜底：{needle}"
+
+
+def test_manual_fallback_exposes_the_same_payload_as_export():
+    """兜底框里的内容必须和导出文件一致，否则用户会静默拿到不同的数据。"""
+    from career_compass.questionnaire import DEFAULT_EXPORT_NAME
+
+    page = render_questionnaire(
+        load_questions(), load_dimension_names(), load_group_names(), load_likert_scale()
+    )
+    # 两条路都必须走同一个 payloadString()，不允许各拼各的
+    assert page.count("payloadString()") >= 2, "导出与兜底应共用同一个载荷函数"
+    assert DEFAULT_EXPORT_NAME in page
+
+
+def test_script_has_no_dangling_dom_reference(html):
+    """JS 里 getElementById 的目标必须在 HTML 中存在。
+
+    内联脚本没有任何编译期检查，写错一个 id 只会在运行时抛错、静默失效。
+    """
+    js = _inline_script(html)
+    declared = set(re.findall(r'id="([^"]+)"', html))
+    used = set(re.findall(r'getElementById\("([^"]+)"\)', js))
+    assert used <= declared, f"引用了不存在的元素：{sorted(used - declared)}"
+
+
+@pytest.mark.skipif(shutil.which("node") is None, reason="本机没有 node，跳过语法校验")
+def test_inline_script_parses_as_javascript(html, tmp_path):
+    """把内联脚本交给 node 做语法检查。
+
+    页面里的 JS 是拼字符串拼出来的，一旦被模板占位符或转义规则破坏，
+    浏览器只会白屏，不会给出任何提示。这条断言让它在测试阶段就暴露。
+    """
+    js_file = tmp_path / "inline.js"
+    js_file.write_text(_inline_script(html), encoding="utf-8")
+    r = subprocess.run(
+        ["node", "--check", str(js_file)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    assert r.returncode == 0, f"内联脚本语法错误：{r.stderr}"
 
 
 def test_html_uses_versioned_storage_key(html):

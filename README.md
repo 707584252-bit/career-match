@@ -40,7 +40,7 @@ career-compass 的设计取向正好相反：
 | 特性 | 本项目的做法 |
 | --- | --- |
 | 可解释 | 每个结论都能回溯到具体维度得分与分差，附「优势 / 差距 / 提升建议」 |
-| 可审计 | 算法是不到 200 行的纯函数，有 168 项单元测试；数据文件带 `_meta.note` 标注出处与替换方法 |
+| 可审计 | 算法是不到 200 行的纯函数，有 173 项单元测试；数据文件带 `_meta.note` 标注出处与替换方法 |
 | 可替换 | 题库、职业画像、名人画像、行业大盘是 4 个独立 JSON，改数据不用改代码 |
 | 可扩展 | 有 CLI、有 Python API、有浏览器答题页（`questionnaire` 子命令），可以接你自己的前端 |
 | 零依赖 | 只用标准库（含 `urllib` 直连 DeepSeek），`pip install` 不会拉进一坨包 |
@@ -101,6 +101,11 @@ python scripts/import_answers.py --from ~/Downloads/career-compass-answers.json 
 
 > 答题页是**单文件、零外部依赖、不联网**的 HTML：双击就能打开，作答只存在你自己
 > 浏览器的 `localStorage` 里，不上传任何地方。页面里**不含答案字段**（有测试守着）。
+>
+> ⚠️ **请用独立浏览器打开它**（双击文件，或 `career-compass questionnaire --open`）。
+> 若把它塞进某个网页的内嵌预览框里作答，浏览器会禁止该框下载文件、写剪贴板，
+> 「导出」「复制」会**点了没反应且不报错**。页面检测到这种情况会自己弹提示，
+> 并提供「显示作答内容」手动复制兜底，作答本身不会丢 —— 但不如一开始就避开。
 
 也可以留在终端里答（不适合 65 题，但适合脚本化场景）：
 
@@ -300,7 +305,7 @@ career-compass/
 │   └── cli.py                   # 命令行入口
 ├── scripts/
 │   └── import_answers.py        # 导入浏览器作答 → 直接出报告
-├── tests/                       # 168 项测试
+├── tests/                       # 173 项测试
 │   ├── test_scoring.py          #   计分、反向题、一致性、空数据
 │   ├── test_recommend.py        #   相似度曲线、权重、排序、大盘修正
 │   ├── test_data_integrity.py   #   数据一改就报警（id 引用、取值域、覆盖率）
@@ -446,7 +451,7 @@ print(client.chat([{"role": "user", "content": "你好"}]))
 
 ```bash
 pip install -e ".[dev]"     # 装 pytest / ruff
-pytest                      # 168 项测试
+pytest                      # 173 项测试
 pytest -q tests/test_recommend.py
 ruff check src tests
 ```

@@ -247,6 +247,46 @@ _TEMPLATE = """<!doctype html>
     border-radius: 10px; opacity: 0; pointer-events: none; transition: all .2s ease; z-index: 30;
   }
   .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* 嵌入预览（iframe）警告条。
+     这不是装饰：预览窗口里浏览器会拦截「下载文件」与「写剪贴板」，
+     两个导出按钮会静默失效。必须显眼提示，并给出一条能走通的路。 */
+  .iframe-warn {
+    display: none; align-items: flex-start; gap: 10px;
+    background: #fff8e6; border: 1px solid #f0d18a; border-radius: 14px;
+    padding: 13px 16px; margin: 16px 0; font-size: 14px; line-height: 1.6;
+  }
+  .iframe-warn.on { display: flex; }
+  .iframe-warn .ico { flex: 0 0 auto; margin-top: 2px; }
+  .iframe-warn b { color: #8a5a00; }
+  .iframe-warn .acts { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .iframe-warn button { padding: 7px 13px; font-size: 13.5px; }
+  .iframe-warn button.primary { background: #c4711f; border-color: #c4711f; }
+
+  /* 手动复制兜底：下载与剪贴板都被拦截时，这是唯一走得通的路，
+     所以给足高度、并且一打开就自动全选。 */
+  .modal {
+    position: fixed; inset: 0; z-index: 40; display: none;
+    background: rgba(31, 36, 48, .45); padding: 24px 16px;
+    align-items: center; justify-content: center;
+  }
+  .modal.on { display: flex; }
+  .modal-in {
+    background: #fff; border-radius: 16px; padding: 18px 20px;
+    width: 100%; max-width: 620px; max-height: 86vh;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .modal-in h3 { margin: 0; font-size: 16.5px; }
+  .modal-in p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+  .modal-in textarea {
+    flex: 1 1 auto; min-height: 240px; resize: vertical;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 13px; line-height: 1.55; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px;
+    background: var(--bg-soft); white-space: pre; overflow: auto;
+  }
+  .modal-in .row { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+
   footer { color: var(--ink-soft); font-size: 13px; padding: 26px 0 10px; }
   footer a { color: var(--ink-soft); }
   @media (max-width: 560px) {
@@ -273,6 +313,29 @@ _TEMPLATE = """<!doctype html>
       没有标准答案，也没有时间限制。凭第一反应作答即可；漏答的题目最终会被按「中性」处理，
       所以尽量答完，但不必纠结。
     </div>
+    <div style="margin-top:8px">
+      <b>建议在独立浏览器里打开这个页面</b>（双击文件，或用 <code>career-compass questionnaire --open</code>）。
+      如果它出现在某个网页的内嵌预览框里，「导出」和「复制」会被浏览器拦掉——
+      真遇到这种情况，页面顶部会给出提示，点 <b>「显示作答内容」</b> 也能手动复制。作答不会丢。
+    </div>
+  </div>
+
+  <div class="iframe-warn" id="iframeWarn">
+    <span class="ico" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c4711f"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 3 2 20h20L12 3z"/><path d="M12 9v5"/><path d="M12 17.5h.01"/>
+      </svg>
+    </span>
+    <div>
+      <b>你正在「嵌入预览窗口」里作答，导出会被浏览器拦截。</b>
+      这个窗口本质上是网页里的一个内嵌框，浏览器默认禁止它下载文件和写入剪贴板，
+      所以下面两个导出按钮会点了没反应。你的作答并<b>没有丢</b>——它就存在这个窗口里。
+      <div class="acts">
+        <button class="primary" id="warnDetach">在独立标签页打开（推荐）</button>
+        <button id="warnRaw">先把手动作答内容显示出来</button>
+      </div>
+    </div>
   </div>
 
   <nav class="tabs" id="tabs"></nav>
@@ -290,8 +353,26 @@ _TEMPLATE = """<!doctype html>
       <div class="track"><i id="barfill"></i></div>
     </div>
     <button id="btn-jump" class="ghost">跳到未答</button>
+    <button id="btn-raw" class="ghost">显示作答内容</button>
     <button id="btn-copy">复制作答</button>
     <button id="btn-export" class="primary">导出作答文件</button>
+  </div>
+</div>
+
+<div class="modal" id="rawModal">
+  <div class="modal-in">
+    <h3>作答内容（手动复制）</h3>
+    <p>
+      下载和剪贴板都被浏览器拦住时，用这条路兜底：框里已经<b>自动全选</b>，
+      按 <b>Ctrl+C</b>（Mac 上 ⌘C）复制，然后粘贴到命令行工具或发给我即可。
+    </p>
+    <p id="rawNote"></p>
+    <textarea id="rawText" spellcheck="false" readonly></textarea>
+    <div class="row">
+      <button id="rawSelect">重新全选</button>
+      <button id="rawCopy">试着复制</button>
+      <button class="primary" id="rawClose">关闭</button>
+    </div>
   </div>
 </div>
 
@@ -311,6 +392,12 @@ _TEMPLATE = """<!doctype html>
 
   var answers = {};
   var flat = [];   // 按展示顺序拍平的题目 id + 类型，用于进度与"跳到未答"
+
+  // 是不是在嵌入预览框里。跨域访问 window.top 会抛异常，抛了就按 iframe 处理——
+  // 宁可多提示一句，也不要在被拦截时让用户以为按钮坏了。
+  var IN_IFRAME = (function () {
+    try { return window.self !== window.top; } catch (e) { return true; }
+  })();
 
   // ---- 读取本地存档 -----------------------------------------------------
   function loadSaved() {
@@ -466,16 +553,79 @@ _TEMPLATE = """<!doctype html>
   }
 
   function download() {
-    var blob = new Blob([payloadString()], { type: "application/json;charset=utf-8" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = EXPORT_NAME;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-    showToast("已下载 " + EXPORT_NAME + "，通常在你的「下载」文件夹里");
+    try {
+      var blob = new Blob([payloadString()], { type: "application/json;charset=utf-8" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = EXPORT_NAME;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      showToast("已尝试下载 " + EXPORT_NAME + "，通常在你的「下载」文件夹里");
+    } catch (e) {
+      showToast("下载被浏览器拦住了，已改用「手动复制」");
+    }
+    // 嵌入预览窗口里下载几乎必然被拦，而且拦了不会报错——用户只会觉得按钮坏了。
+    // 所以这里主动把内容摊开来，保证这条路一定走得通。
+    if (IN_IFRAME) {
+      window.setTimeout(function () {
+        showRaw("如果刚才没有下载到文件，就用下面的内容手动复制——两种方式拿到的数据完全一样。");
+      }, 450);
+    }
+  }
+
+  // ---- 手动复制兜底 -----------------------------------------------------
+  function showRaw(note) {
+    var ta = document.getElementById("rawText");
+    ta.value = payloadString();
+    document.getElementById("rawNote").textContent = note || "";
+    document.getElementById("rawModal").classList.add("on");
+    selectRaw();
+  }
+
+  function hideRaw() {
+    document.getElementById("rawModal").classList.remove("on");
+  }
+
+  function selectRaw() {
+    var ta = document.getElementById("rawText");
+    ta.focus();
+    ta.select();
+  }
+
+  function rawCopy() {
+    // 先试现代 API，再退回 execCommand，最后退回「自己按 Ctrl+C」
+    var text = document.getElementById("rawText").value;
+    function manual() {
+      selectRaw();
+      showToast("已全选，请按 Ctrl+C 复制");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function () { showToast("已复制到剪贴板"); },
+        manual
+      );
+    } else {
+      var ta = document.getElementById("rawText");
+      ta.removeAttribute("readonly");
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+      ta.setAttribute("readonly", "readonly");
+      if (ok) { showToast("已复制到剪贴板"); } else { manual(); }
+    }
+  }
+
+  function detach() {
+    // 同一个页面在独立标签页里打开，localStorage 是共享的，作答不会丢
+    var w = null;
+    try { w = window.open(window.location.href, "_blank"); } catch (e) { w = null; }
+    if (!w) {
+      showToast("弹窗被拦住了，请用预览窗口右上角的「在新标签页打开」");
+      showRaw("也可以直接在这里复制作答内容。");
+    }
   }
 
   function copy() {
@@ -488,7 +638,7 @@ _TEMPLATE = """<!doctype html>
       document.body.appendChild(ta);
       ta.select();
       try { document.execCommand("copy"); showToast("已复制到剪贴板"); }
-      catch (e) { showToast("复制失败，请改用「导出作答文件」"); }
+      catch (e) { showRaw("剪贴板被浏览器拦住了，请手动复制下面的内容。"); }
       document.body.removeChild(ta);
     }
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -514,9 +664,32 @@ _TEMPLATE = """<!doctype html>
     answers = loadSaved();
     buildForm();
     refresh();
+
     document.getElementById("btn-export").addEventListener("click", download);
     document.getElementById("btn-copy").addEventListener("click", copy);
     document.getElementById("btn-jump").addEventListener("click", jumpToBlank);
+    document.getElementById("btn-raw").addEventListener("click", function () { showRaw(); });
+
+    document.getElementById("rawSelect").addEventListener("click", selectRaw);
+    document.getElementById("rawCopy").addEventListener("click", rawCopy);
+    document.getElementById("rawClose").addEventListener("click", hideRaw);
+    document.getElementById("rawModal").addEventListener("click", function (e) {
+      if (e.target === this) hideRaw();   // 点遮罩关闭
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") hideRaw();
+    });
+
+    if (IN_IFRAME) {
+      var warn = document.getElementById("iframeWarn");
+      warn.classList.add("on");
+      document.getElementById("warnDetach").addEventListener("click", detach);
+      document.getElementById("warnRaw").addEventListener("click", function () { showRaw(); });
+      // 已经答过一些题的话，把「导出会被拦」这件事说透，避免白答一遍
+      if (Object.keys(answers).length > 0) {
+        showToast("已恢复 " + Object.keys(answers).length + " 题作答（存在本机浏览器里）");
+      }
+    }
   });
 })();
 </script>
