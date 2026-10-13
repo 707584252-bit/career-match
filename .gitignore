@@ -77,6 +77,7 @@ me.json
 
 # ---- 本地启动脚本（内含本机绝对路径，不适合提交）----
 run.cmd
+terminal.cmd
 *.local.cmd
 
 # ---- Jupyter ----
