@@ -40,7 +40,7 @@ career-compass 的设计取向正好相反：
 | 特性 | 本项目的做法 |
 | --- | --- |
 | 可解释 | 每个结论都能回溯到具体维度得分与分差，附「优势 / 差距 / 提升建议」 |
-| 可审计 | 算法是不到 200 行的纯函数，有 106 项单元测试；数据文件带 `_meta.note` 标注出处与替换方法 |
+| 可审计 | 算法是不到 200 行的纯函数，有 126 项单元测试；数据文件带 `_meta.note` 标注出处与替换方法 |
 | 可替换 | 题库、职业画像、名人画像、行业大盘是 4 个独立 JSON，改数据不用改代码 |
 | 可扩展 | 有 CLI、有 Python API、有纯问卷导出（`questions` 子命令），可以接你自己的前端 |
 | 零依赖 | 只用标准库（含 `urllib` 直连 DeepSeek），`pip install` 不会拉进一坨包 |
@@ -269,7 +269,7 @@ career-compass/
 │   ├── report.py                # Markdown / 内联 SVG 的 HTML 报告
 │   ├── llm.py                   # DeepSeek 客户端（纯标准库 urllib）
 │   └── cli.py                   # 命令行入口
-├── tests/                       # 106 项测试
+├── tests/                       # 126 项测试
 │   ├── test_scoring.py          #   计分、反向题、一致性、空数据
 │   ├── test_recommend.py        #   相似度曲线、权重、排序、大盘修正
 │   ├── test_data_integrity.py   #   数据一改就报警（id 引用、取值域、覆盖率）
@@ -413,7 +413,7 @@ print(client.chat([{"role": "user", "content": "你好"}]))
 
 ```bash
 pip install -e ".[dev]"     # 装 pytest / ruff
-pytest                      # 106 项测试
+pytest                      # 126 项测试
 pytest -q tests/test_recommend.py
 ruff check src tests
 ```

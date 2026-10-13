@@ -521,9 +521,24 @@ def cmd_score(args) -> int:
     return 0
 
 
+def _summarize_balance(info: dict) -> str:
+    """把 /user/balance 的响应压成一行可读文字。"""
+    rows = info.get("balance_infos") or []
+    if not rows:
+        return "（未返回余额明细）"
+    parts = []
+    for r in rows:
+        cur = r.get("currency", "?")
+        parts.append(
+            f"{cur} 总额 {r.get('total_balance', '?')}"
+            f"（充值 {r.get('topped_up_balance', '?')} / 赠送 {r.get('granted_balance', '?')}）"
+        )
+    return "；".join(parts)
+
+
 def cmd_llm_test(args) -> int:
     """验证 DeepSeek API 是否配置正确。"""
-    from .llm import DeepSeekClient, LLMError
+    from .llm import DeepSeekClient, InsufficientBalanceError, LLMError
 
     client = DeepSeekClient(model=args.model) if args.model else DeepSeekClient()
     if not client.enabled:
@@ -540,6 +555,14 @@ def cmd_llm_test(args) -> int:
         return 0
     except LLMError as e:
         print(f"[x] 调用失败：{e}")
+        if isinstance(e, InsufficientBalanceError):
+            # 这种情况最容易误判：Key 与网络都没问题，只是账户没钱。
+            # 直接把余额摆出来，免得用户反复重建 Key。
+            try:
+                print(f"[i] 账户余额：{_summarize_balance(client.balance())}")
+                print("[i] 余额为 0 也能通过鉴权，所以上面的报错不代表 Key 有问题——充值即可恢复。")
+            except LLMError:  # pragma: no cover - 查询余额失败不影响主流程
+                pass
         return 1
 
 

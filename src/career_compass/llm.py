@@ -63,6 +63,57 @@ class MissingAPIKeyError(LLMError):
     """未配置 API Key。"""
 
 
+class InsufficientBalanceError(LLMError):
+    """账户余额不足（HTTP 402）。
+
+    单列一个异常类型，是因为它在使用体验上与其他失败完全不同：
+    Key 是对的、网络是通的、代码也是对的，只是账户里没钱。
+    调用方可以据此给出「去充值」这种明确的下一步，而不是笼统地报「调用失败」。
+    """
+
+
+#: 常见 HTTP 状态码 → 可操作的中文说明。
+#: 大模型服务返回的错误体对普通用户几乎没有可读性（例如 HTTP 402 的
+#: ``Insufficient Balance``），这里补一句「所以该怎么办」。
+HTTP_HINTS: dict[int, str] = {
+    400: "请求参数不合法（常见于模型名写错或参数取值不被支持）。",
+    401: "API Key 无效、已删除，或复制时带了多余字符。"
+    "请到 https://platform.deepseek.com/api_keys 重新创建，注意首尾不要有空格或引号。",
+    402: "账户余额不足。请到 https://platform.deepseek.com/top_up 充值后再试。"
+    "注意：Key 正确但余额为 0 时同样无法调用，这是新账号最常见的情况。",
+    403: "无权访问该资源，请确认账号状态与该模型的权限。",
+    404: "接口地址或模型名不存在，请检查 base_url 与 model 参数。",
+    422: "请求体格式不被接受，请检查参数类型。",
+    429: "请求过于频繁或已达速率上限，稍等片刻再试。",
+    500: "DeepSeek 服务端内部错误，通常稍后重试即可。",
+    502: "网关错误，通常是临时故障，稍后重试。",
+    503: "DeepSeek 服务暂时不可用（过载或维护中），稍后重试。",
+}
+
+
+def _format_http_error(code: int, detail: str = "", reason: str = "") -> str:
+    """把 HTTP 错误码与响应体拼成一句人能看懂的话。
+
+    Args:
+        code: HTTP 状态码。
+        detail: 响应体原文（可能为空）。
+        reason: 标准原因短语，如 ``Unauthorized``。
+
+    Returns:
+        多行字符串：首行是「是什么」，次行是「怎么办」，末行附服务端原文。
+    """
+    head = f"DeepSeek 返回 HTTP {code}"
+    if reason:
+        head += f"（{reason}）"
+    parts = [head]
+    hint = HTTP_HINTS.get(code)
+    if hint:
+        parts.append(f"    可能原因与处理：{hint}")
+    if detail:
+        parts.append(f"    服务端原文：{detail}")
+    return "\n".join(parts)
+
+
 # ---------------------------------------------------------------------------
 # .env 支持（极简实现，避免引入 python-dotenv）
 # ---------------------------------------------------------------------------
@@ -178,10 +229,14 @@ class DeepSeekClient:
                     detail = e.read().decode("utf-8", errors="replace")[:500]
                 except Exception:  # pragma: no cover - 兜底
                     pass
+                message = _format_http_error(e.code, detail, str(e.reason or ""))
+                # 余额不足单独成一个异常类型，便于调用方给出「去充值」的明确指引
+                if e.code == 402:
+                    raise InsufficientBalanceError(message) from e
                 # 4xx 通常是参数或鉴权问题，重试无意义
                 if 400 <= e.code < 500 and e.code != 429:
-                    raise LLMError(f"DeepSeek 返回 HTTP {e.code}：{detail or e.reason}") from e
-                last_err = LLMError(f"DeepSeek 返回 HTTP {e.code}：{detail or e.reason}")
+                    raise LLMError(message) from e
+                last_err = LLMError(message)
             except (urllib.error.URLError, TimeoutError, ssl.SSLError) as e:
                 last_err = LLMError(f"网络请求失败：{e}")
             if attempt < self.max_retries:
@@ -272,6 +327,43 @@ class DeepSeekClient:
             "usage": data.get("usage", {}),
             "model": data.get("model", payload["model"]),
         }
+
+    def balance(self) -> dict[str, object]:
+        """查询账户余额。
+
+        对应 ``GET /user/balance``。用于在调用失败时区分「Key 不对」与「没钱了」
+        ——这两种情况的处理方式完全不同，但用户看到的错误提示往往一样含糊。
+
+        Returns:
+            形如 ``{"is_available": bool, "balance_infos": [...]}`` 的原始响应。
+
+        Raises:
+            MissingAPIKeyError: 未配置 Key。
+            LLMError: 请求失败。
+        """
+        self._require_key()
+        req = urllib.request.Request(
+            f"{self.base_url}/user/balance",
+            method="GET",
+            headers={
+                "Accept": "application/json",
+                "Authorization": f"Bearer {self.api_key}",
+            },
+        )
+        try:
+            with urllib.request.urlopen(
+                req, timeout=self.timeout, context=ssl.create_default_context()
+            ) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            detail = ""
+            try:
+                detail = e.read().decode("utf-8", errors="replace")[:300]
+            except Exception:  # pragma: no cover - 兜底
+                pass
+            raise LLMError(_format_http_error(e.code, detail, str(e.reason or ""))) from e
+        except (urllib.error.URLError, TimeoutError, ssl.SSLError) as e:
+            raise LLMError(f"网络请求失败：{e}") from e
 
     def test_connection(self) -> str:
         """发一条最小请求验证连通性与鉴权。"""

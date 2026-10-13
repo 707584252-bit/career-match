@@ -108,10 +108,21 @@ career-compass llm-test
 | --- | --- | --- |
 | `[x] 未检测到 API Key` | 环境变量没生效，或 `.env` 不在查找路径上 | 确认 `.env` 在项目根目录；PowerShell 设完变量要新开一个终端 |
 | `HTTP 401` | Key 错误、已删除或复制时多了空格 | 重新创建 Key，注意首尾不要有空格或引号 |
-| `HTTP 402` | 余额不足 | 去控制台充值 |
+| `HTTP 402 Insufficient Balance` | **账户余额不足** | 去 [充值页](https://platform.deepseek.com/top_up)充值。注意：**Key 正确但余额为 0 时同样报错**，这是新账号最常见的情况，重建 Key 没有用 |
 | `HTTP 429` | 触发限流 | 降低调用频率，或稍后重试 |
 | `HTTP 400` | 请求参数不合法 | 通常是 `model` 名写错了 |
 | `网络请求失败` / SSL 错误 | 网络不通或代理问题 | 检查代理设置；本客户端走系统代理 |
+
+> **怎么区分「Key 不对」和「没钱了」？** 这两种情况的 HTTP 状态码不同，客户端会分别提示：
+> `401` = Key 无效；`402` = Key 有效但余额为 0。遇到 `402` 时命令会额外打印一行账户余额，
+> 例如 `[i] 账户余额：CNY 总额 0.00（充值 0.00 / 赠送 0.00）`。
+> 也可以直接查：
+>
+> ```bash
+> curl https://api.deepseek.com/user/balance -H "Authorization: Bearer $DEEPSEEK_API_KEY"
+> ```
+>
+> 返回 `"is_available": false` 且 `total_balance` 为 `0.00` 就说明需要充值。
 
 ---
 
@@ -351,8 +362,8 @@ for chunk in stream:
 | 现象 | 原因与处理 |
 | --- | --- |
 | `MissingAPIKeyError` | 没配 Key。运行 `career-compass llm-test` 看具体提示 |
-| `HTTP 401` | Key 失效。检查是否多了空格/引号，或已在控制台删除 |
-| `HTTP 402 Insufficient Balance` | 余额不足，去充值 |
+| `HTTP 401 Authentication Fails` | Key 失效。检查是否多了空格/引号，或已在控制台删除 |
+| `HTTP 402 Insufficient Balance` | 余额不足，去 [充值页](https://platform.deepseek.com/top_up)。**重建 Key 无效**，这两种错误状态码不同 |
 | `HTTP 429` | 限流。客户端已内置指数退避重试 2 次；仍失败就放慢频率 |
 | `HTTP 400 model not found` | `--model` 写错了。用 `deepseek-flash` 或 `deepseek-v4-pro` |
 | 报错说 `reasoning_effort` 不合法 | 只能是 `low` / `high` / `max`。本项目在发送前会本地校验并抛出明确错误 |
@@ -363,6 +374,19 @@ for chunk in stream:
 
 客户端内置的重试策略：**4xx（除 429）不重试**（参数或鉴权错误，重试无意义），
 网络错误与 429 按 1.5 秒起步指数退避重试 2 次。
+
+代码里区分两类异常，便于你在自己的脚本里分别处理：
+
+```python
+from career_compass.llm import DeepSeekClient, InsufficientBalanceError, LLMError
+
+try:
+    print(DeepSeekClient().test_connection())
+except InsufficientBalanceError:
+    ...  # Key 是对的，只是没钱了 → 提示用户充值
+except LLMError as e:
+    ...  # 其他失败：Key、网络、参数
+```
 
 ---
 
