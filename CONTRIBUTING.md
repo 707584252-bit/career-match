@@ -102,8 +102,8 @@ O*NET 的 Ability 评分是 1–7 分制（Importance / Level）。映射到本�
 ## 五、开发环境
 
 ```bash
-git clone https://github.com/yourname/career-compass.git
-cd career-compass
+git clone https://github.com/707584252-bit/career-match.git
+cd career-match
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"

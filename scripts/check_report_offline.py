@@ -18,6 +18,13 @@ import re
 import sys
 from pathlib import Path
 
+#: 允许在未安装本包的情况下，直接从仓库根目录运行本脚本
+_SRC = Path(__file__).resolve().parents[1] / "src"
+if _SRC.is_dir() and str(_SRC) not in sys.path:
+    sys.path.insert(0, str(_SRC))
+
+from career_compass.console import ensure_utf8_output  # noqa: E402
+
 #: SVG 命名空间不是资源请求，是规范要求的声明，必须放行
 ALLOWED_URLS = {
     "http://www.w3.org/2000/svg",
@@ -72,6 +79,8 @@ def check(path: Path) -> list[str]:
 
 
 def main(argv: list[str]) -> int:
+    ensure_utf8_output()
+
     if len(argv) < 2:
         print(__doc__)
         return 2

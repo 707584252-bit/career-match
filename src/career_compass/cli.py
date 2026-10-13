@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 from . import __version__
+from .console import ensure_utf8_output
 from .data_loader import (
     load_careers,
     load_dimension_names,
@@ -628,6 +629,10 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    # 先兜住输出编码：英文 Windows 的默认代码页编不出中文，
+    # 否则任何一条 print 都会把命令打成 UnicodeEncodeError。
+    ensure_utf8_output()
+
     parser = build_parser()
     args = parser.parse_args(argv)
     try:

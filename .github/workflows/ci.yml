@@ -40,29 +40,25 @@ jobs:
           python -m pip install -e ".[dev]"
 
       - name: 确认零第三方运行时依赖
-        run: |
-          python -c "
-          import re, pathlib
-          txt = pathlib.Path('pyproject.toml').read_text(encoding='utf-8')
-          m = re.search(r'^dependencies\s*=\s*\[(.*?)\]', txt, re.S | re.M)
-          deps = m.group(1).strip() if m else 'PATTERN-NOT-FOUND'
-          assert deps == '', f'运行时依赖应为空，实际为: {deps!r}'
-          print('运行时依赖确实为空 OK')
-          "
+        run: python scripts/check_no_runtime_deps.py
 
       - name: 运行测试
         run: python -m pytest -q
 
+      # 注意：产物路径用 out/ 而不是 /tmp。
+      # /tmp 在 Linux 和 Git Bash 下是临时目录，但 Windows PowerShell 里的
+      # python 会把它解析成 C:\tmp\...，两个 shell 看到的不是同一个文件。
+      # out/ 是仓库内的相对路径，所有平台一致，且已被 .gitignore 忽略。
       - name: 端到端冒烟（demo 出报告）
         shell: bash
         run: |
-          career-compass demo --persona tech --html /tmp/r.html --md /tmp/r.md
-          test -s /tmp/r.html
-          grep -q "职业能力测评报告" /tmp/r.html
-          echo "报告生成成功 ✓"
+          python -m career_compass demo --persona tech --html out/ci_report.html --md out/ci_report.md
+          test -s out/ci_report.html
+          grep -q "职业能力测评报告" out/ci_report.html
+          echo "报告生成成功 OK"
 
       - name: 报告零外部依赖校验
-        run: python scripts/check_report_offline.py /tmp/r.html
+        run: python scripts/check_report_offline.py out/ci_report.html
 
   lint:
     name: Lint (ruff)

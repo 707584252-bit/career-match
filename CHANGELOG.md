@@ -7,6 +7,32 @@
 
 ---
 
+## [1.0.1] - 2026-10-13
+
+### 修复
+
+- **中文输出在非 UTF-8 代码页下会让程序崩溃**：英文 Windows 的默认控制台代码页是
+  cp1252，编不出中文，`print` 会抛 `UnicodeEncodeError` 并把整个命令打断——用户拿不到
+  任何结果。新增 `career_compass.console.ensure_utf8_output()`：在 Windows 上把控制台
+  切到 UTF-8 代码页，并把标准输出/错误流重配置为 UTF-8（不可编码字符降级为 `?`）。
+  命令行入口与两个检查脚本都会在启动时调用，输出重定向到文件或管道时同样是 UTF-8。
+- **CI 的 Windows 任务必然失败**：原工作流用多行内联 `python -c` 做零依赖检查，
+  该写法要经过不同 shell（bash / pwsh）的引号与换行处理，在不同平台结果不一致；
+  现改为独立脚本 `scripts/check_no_runtime_deps.py`。
+- **CI 产物路径跨平台不一致**：冒烟步骤把报告写到 `/tmp/r.html`，但 Windows 上的 Python
+  会把它解析成 `C:\tmp\...`，导致前后两个步骤操作的不是同一个文件；现统一为仓库内的
+  `out/ci_report.html`（相对路径，且已被 `.gitignore` 忽略）。
+- **删除一条跑在产物生成之前的测试**：`test_ci_artifact_exists` 断言后续步骤才会生成的
+  `/tmp/r.html` 存在，在 Linux / macOS 上必然失败。该断言改由工作流的冒烟步骤直接承担。
+
+### 变更
+
+- 新增 3 项测试：非 UTF-8 控制台下的检查脚本与命令行主流程、零依赖门禁脚本与单测结论一致
+  （合计 106 项）。
+- `pyproject.toml` / `README.md` / `CONTRIBUTING.md` 中的仓库地址由占位符改为实际地址。
+
+---
+
 ## [1.0.0] - 2026-10-13
 
 首个公开版本。

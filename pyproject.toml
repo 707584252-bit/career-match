@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "career-compass"
-version = "1.0.0"
+version = "1.0.1"
 description = "职业能力测评与加权职业推荐引擎：21 维度题库 + 霍兰德/Big Five 理论 + 行业大盘修正 + DeepSeek 个性化解读"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -34,10 +34,10 @@ dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.5"]
 openai-sdk = ["openai>=1.30"]
 
 [project.urls]
-Homepage = "https://github.com/yourname/career-compass"
-Repository = "https://github.com/yourname/career-compass"
-Issues = "https://github.com/yourname/career-compass/issues"
-Changelog = "https://github.com/yourname/career-compass/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/707584252-bit/career-match"
+Repository = "https://github.com/707584252-bit/career-match"
+Issues = "https://github.com/707584252-bit/career-match/issues"
+Changelog = "https://github.com/707584252-bit/career-match/blob/main/CHANGELOG.md"
 
 [project.scripts]
 career-compass = "career_compass.cli:main"

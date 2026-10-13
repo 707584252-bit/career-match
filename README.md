@@ -3,7 +3,7 @@
 > 一套可复现、可解释、可替换数据的**职业能力测评与加权职业推荐引擎**。
 > 21 个维度、65 道题、25 个职业画像、12 位名人典范、行业大盘修正，**零第三方依赖**，纯 Python 标准库实现。
 
-[![CI](https://github.com/yourname/career-compass/actions/workflows/ci.yml/badge.svg)](https://github.com/yourname/career-compass/actions/workflows/ci.yml)
+[![CI](https://github.com/707584252-bit/career-match/actions/workflows/ci.yml/badge.svg)](https://github.com/707584252-bit/career-match/actions/workflows/ci.yml)
 [![Python](https://img.shields.io/badge/python-3.9%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)](pyproject.toml)
@@ -40,7 +40,7 @@ career-compass 的设计取向正好相反：
 | 特性 | 本项目的做法 |
 | --- | --- |
 | 可解释 | 每个结论都能回溯到具体维度得分与分差，附「优势 / 差距 / 提升建议」 |
-| 可审计 | 算法是不到 200 行的纯函数，有 104 项单元测试；数据文件带 `_meta.note` 标注出处与替换方法 |
+| 可审计 | 算法是不到 200 行的纯函数，有 106 项单元测试；数据文件带 `_meta.note` 标注出处与替换方法 |
 | 可替换 | 题库、职业画像、名人画像、行业大盘是 4 个独立 JSON，改数据不用改代码 |
 | 可扩展 | 有 CLI、有 Python API、有纯问卷导出（`questions` 子命令），可以接你自己的前端 |
 | 零依赖 | 只用标准库（含 `urllib` 直连 DeepSeek），`pip install` 不会拉进一坨包 |
@@ -52,8 +52,8 @@ career-compass 的设计取向正好相反：
 ## 30 秒上手
 
 ```bash
-git clone https://github.com/yourname/career-compass.git
-cd career-compass
+git clone https://github.com/707584252-bit/career-match.git
+cd career-match
 pip install -e .
 ```
 
@@ -269,7 +269,7 @@ career-compass/
 │   ├── report.py                # Markdown / 内联 SVG 的 HTML 报告
 │   ├── llm.py                   # DeepSeek 客户端（纯标准库 urllib）
 │   └── cli.py                   # 命令行入口
-├── tests/                       # 104 项测试
+├── tests/                       # 106 项测试
 │   ├── test_scoring.py          #   计分、反向题、一致性、空数据
 │   ├── test_recommend.py        #   相似度曲线、权重、排序、大盘修正
 │   ├── test_data_integrity.py   #   数据一改就报警（id 引用、取值域、覆盖率）
@@ -413,7 +413,7 @@ print(client.chat([{"role": "user", "content": "你好"}]))
 
 ```bash
 pip install -e ".[dev]"     # 装 pytest / ruff
-pytest                      # 104 项测试
+pytest                      # 106 项测试
 pytest -q tests/test_recommend.py
 ruff check src tests
 ```

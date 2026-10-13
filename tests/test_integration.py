@@ -217,6 +217,72 @@ def test_gitignore_covers_env_and_reports():
         assert pattern in gi, f".gitignore 未忽略 {pattern}"
 
 
-@pytest.mark.skipif(os.environ.get("CI") != "true", reason="仅在 CI 中校验产物")
-def test_ci_artifact_exists():
-    assert Path("/tmp/r.html").is_file()
+# ---------------------------------------------------------------------------
+# 非 UTF-8 控制台（英文 Windows 的默认代码页是 cp1252）
+# ---------------------------------------------------------------------------
+
+
+def _run_with_console_encoding(args: list[str], encoding: str) -> subprocess.CompletedProcess:
+    env = {
+        **os.environ,
+        "PYTHONIOENCODING": encoding,
+        "PYTHONPATH": str(REPO_ROOT / "src"),
+    }
+    return subprocess.run(
+        args,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=env,
+        cwd=str(REPO_ROOT),
+    )
+
+
+def test_offline_check_survives_non_utf8_console(tmp_path):
+    """英文 Windows 的代码页编不出中文，不能因此让检查脚本崩溃。
+
+    这是真实踩过的坑：修复前 print 中文会抛 UnicodeEncodeError，
+    CI 的 windows 任务正是死在这里，而中文系统本地完全看不出来。
+    """
+    from career_compass.cli import generate_demo_answers
+    from career_compass.data_loader import load_dimension_names, load_questions
+    from career_compass.recommend import recommend
+    from career_compass.report import render_html
+    from career_compass.scoring import compute_profile
+
+    qs = load_questions()
+    profile = compute_profile(qs, generate_demo_answers(qs, seed=1), load_dimension_names())
+    out = tmp_path / "r.html"
+    out.write_text(render_html(profile, recommend(profile, top_n=2)), encoding="utf-8")
+
+    r = _run_with_console_encoding([sys.executable, str(SCRIPTS), str(out)], "cp1252")
+    assert "UnicodeEncodeError" not in r.stderr, r.stderr
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "零外部依赖" in r.stdout
+
+
+def test_cli_survives_non_utf8_console(tmp_path):
+    """同一件事对命令行主流程再验一遍：报告要能正常生成出来。"""
+    target = tmp_path / "report.md"
+    r = _run_with_console_encoding(
+        [sys.executable, "-m", "career_compass", "demo", "--persona", "tech", "--md", str(target)],
+        "cp1252",
+    )
+    assert "UnicodeEncodeError" not in r.stderr, r.stderr
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert target.is_file() and target.stat().st_size > 0
+
+
+def test_check_no_runtime_deps_script_agrees_with_test():
+    """CI 用的脚本必须和单测结论一致，否则门禁等于形同虚设。"""
+    script = REPO_ROOT / "scripts" / "check_no_runtime_deps.py"
+    r = subprocess.run(
+        [sys.executable, str(script)],
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "运行时依赖确实为空" in r.stdout
