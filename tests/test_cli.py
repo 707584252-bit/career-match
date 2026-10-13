@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import subprocess
+import sys
 
 import pytest
 
@@ -261,9 +263,11 @@ def test_parser_accepts_all_subcommands():
         ["demo"],
         ["demo", "--persona", "creative", "--top", "3"],
         ["run", "--non-interactive"],
-        ["report", "-i", "x.json", "--html", "a.html"],
+        ["report", "-i", "x.json", "--html", "a.html", "--open"],
         ["score", "-i", "x.json"],
         ["questions"],
+        ["questionnaire", "-o", "q.html"],
+        ["questionnaire", "--open"],
         ["list-careers"],
         ["llm-test"],
     ]
@@ -323,3 +327,98 @@ def test_cli_llm_test_without_key_returns_error_code(monkeypatch, tmp_path):
 def test_cli_reports_missing_input_file(tmp_path, capsys):
     assert main(["report", "-i", str(tmp_path / "nope.json")]) == 1
     assert "文件未找到" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------------------
+# --open：把「文件生成好了，请自己去找」这一步省掉
+# ---------------------------------------------------------------------------
+
+
+def test_open_without_html_falls_back_to_report_html(tmp_path, monkeypatch):
+    """只给 ``--open`` 而不给 ``--html`` 时，应自动落到 ``report.html`` 并打开它。
+
+    用户加了 ``--open`` 却什么都不发生，是最容易让人以为「功能坏了」的体验，
+    所以这条兜底是刻意设计的，不是副作用。
+    """
+    qs = load_questions()
+    src = tmp_path / "a.json"
+    save_answers(src, generate_demo_answers(qs, seed=5))
+
+    opened: list[str] = []
+    monkeypatch.setattr("career_compass.cli._open_in_browser", lambda p: opened.append(str(p)))
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["report", "-i", str(src), "--open"]) == 0
+    assert (tmp_path / "report.html").is_file(), "未指定 --html 时应落到 report.html"
+    assert len(opened) == 1
+    assert opened[0].replace("\\", "/").endswith("report.html")
+
+
+def test_open_flag_opens_the_explicit_html(tmp_path, monkeypatch):
+    """给了 ``--html`` 就必须打开那一个文件，不能又去打开默认名。"""
+    qs = load_questions()
+    src = tmp_path / "a.json"
+    save_answers(src, generate_demo_answers(qs, seed=5))
+    out = tmp_path / "custom.html"
+
+    opened: list[str] = []
+    monkeypatch.setattr("career_compass.cli._open_in_browser", lambda p: opened.append(str(p)))
+
+    assert main(["report", "-i", str(src), "--html", str(out), "--open"]) == 0
+    assert out.is_file()
+    assert len(opened) == 1
+    assert opened[0].replace("\\", "/").endswith("custom.html")
+
+
+def test_open_fallback_does_not_leak_to_questionnaire(tmp_path, monkeypatch):
+    """``--open`` 的兜底只该套在出报告的子命令上。
+
+    ``questionnaire`` 也有 ``--open``，但它打开的是自己生成的答题页；
+    若兜底逻辑写成「见到 --open 就塞 html」，这里会多出一个莫名其妙的
+    ``report.html``——正是这条断言要拦住的事。
+    """
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr("career_compass.cli._open_in_browser", lambda p: None)
+
+    assert main(["questionnaire", "-o", "q.html", "--open"]) == 0
+    assert (tmp_path / "q.html").is_file()
+    assert not (tmp_path / "report.html").exists(), "questionnaire 不该被 --open 兜底生成 report.html"
+
+
+def test_open_flag_without_html_for_demo_and_run(tmp_path, monkeypatch):
+    """demo 与 run 走的是同一个 add_common，兜底行为必须一致。"""
+    opened: list[str] = []
+    monkeypatch.setattr("career_compass.cli._open_in_browser", lambda p: opened.append(str(p)))
+    monkeypatch.chdir(tmp_path)
+
+    assert main(["demo", "--open"]) == 0
+    assert (tmp_path / "report.html").is_file()
+    assert len(opened) == 1
+
+    assert main(["run", "--non-interactive", "--open"]) == 0
+    assert len(opened) == 2
+
+
+def test_open_failure_is_reported_without_failing_the_command(tmp_path, monkeypatch, capsys):
+    """打不开浏览器不是错误——报告已经写好了。
+
+    必须走真正的 ``_open_in_browser`` 异常分支：直接测这个函数，
+    而不是替换掉它（否则测的是替身，不是产品代码）。
+    """
+    from career_compass.cli import _open_in_browser
+
+    target = tmp_path / "r.html"
+    target.write_text("x", encoding="utf-8")
+
+    def boom(*_a, **_k):
+        raise OSError("没有可用的浏览器")
+
+    monkeypatch.setattr(sys, "platform", "linux")
+    monkeypatch.setattr(subprocess, "run", boom)
+
+    _open_in_browser(target)  # 不应抛异常
+
+    out = capsys.readouterr().out
+    assert "没能自动打开浏览器" in out
+    # 失败时必须给出可双击的绝对路径，相对路径对用户没有意义
+    assert str(target.resolve()) in out

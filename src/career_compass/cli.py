@@ -329,6 +329,7 @@ def _emit_report(
     out_md: Path | None,
     narrative: str | None,
     quiet: bool = False,
+    open_html: bool = False,
 ) -> None:
     if out_md:
         out_md.parent.mkdir(parents=True, exist_ok=True)
@@ -340,6 +341,8 @@ def _emit_report(
         out_html.write_text(render_html(profile, recs, narrative), encoding="utf-8")
         if not quiet:
             print(f"[ok] HTML 报告：{out_html}")
+        if open_html:
+            _open_in_browser(out_html)
 
 
 def _print_summary(profile, recs) -> None:
@@ -423,7 +426,11 @@ def cmd_questionnaire(args) -> int:
 
 
 def _open_in_browser(path: Path) -> None:
-    """尽力用系统默认程序打开文件；失败只提示，不影响命令成功。"""
+    """尽力用系统默认程序打开文件；失败只提示，不影响命令成功。
+
+    对非技术用户来说，「文件生成好了，请自己去找并双击」是最容易卡住的一步，
+    所以这里直接调系统默认程序；打不开时也必须给出**绝对路径**而不是相对路径。
+    """
     import os
     import subprocess
 
@@ -435,9 +442,9 @@ def _open_in_browser(path: Path) -> None:
             subprocess.run(["open", str(target)], check=False, timeout=10)
         else:
             subprocess.run(["xdg-open", str(target)], check=False, timeout=10)
-        print("[ok] 已尝试用默认浏览器打开。")
+        print(f"[ok] 已用默认浏览器打开：{target}")
     except Exception as e:  # pragma: no cover - 环境相关
-        print(f"[!] 没能自动打开浏览器（{e}），请手动双击：{target}")
+        print(f"[!] 没能自动打开浏览器（{e}），请手动双击这个文件：{target}")
 
 
 def cmd_list(args) -> int:
@@ -474,7 +481,12 @@ def cmd_demo(args) -> int:
         narrative = _try_llm(profile, recs, args)
     _print_summary(profile, recs)
     _emit_report(
-        profile, recs, Path(args.html) if args.html else None, Path(args.md) if args.md else None, narrative
+        profile,
+        recs,
+        Path(args.html) if args.html else None,
+        Path(args.md) if args.md else None,
+        narrative,
+        open_html=bool(getattr(args, "open", False)),
     )
     return 0
 
@@ -522,7 +534,12 @@ def cmd_run(args) -> int:
     narrative = _try_llm(profile, recs, args) if args.llm else None
     _print_summary(profile, recs)
     _emit_report(
-        profile, recs, Path(args.html) if args.html else None, Path(args.md) if args.md else None, narrative
+        profile,
+        recs,
+        Path(args.html) if args.html else None,
+        Path(args.md) if args.md else None,
+        narrative,
+        open_html=bool(getattr(args, "open", False)),
     )
     return 0
 
@@ -536,7 +553,12 @@ def cmd_report(args) -> int:
     narrative = _try_llm(profile, recs, args) if args.llm else None
     _print_summary(profile, recs)
     _emit_report(
-        profile, recs, Path(args.html) if args.html else None, Path(args.md) if args.md else None, narrative
+        profile,
+        recs,
+        Path(args.html) if args.html else None,
+        Path(args.md) if args.md else None,
+        narrative,
+        open_html=bool(getattr(args, "open", False)),
     )
     return 0
 
@@ -625,10 +647,11 @@ def build_parser() -> argparse.ArgumentParser:
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "示例：\n"
-            "  career-compass demo --html report.html          # 用示例作答直接出报告\n"
+            "  career-compass questionnaire --open             # 生成答题页并打开，推荐从这里开始\n"
+            "  career-compass demo --html report.html --open   # 用示例作答直接出报告并打开\n"
             "  career-compass demo --persona creative --llm     # 示例 + DeepSeek 解读\n"
             "  career-compass run --save-answers me.json        # 交互式答题\n"
-            "  career-compass report --input me.json --html r.html --llm\n"
+            "  career-compass report --input me.json --html r.html --open\n"
             "  career-compass score --input me.json             # 只看结构化评分\n"
             "  career-compass questions --out q.json            # 导出问卷给自建前端\n"
             "  career-compass llm-test                          # 验证 API 配置\n"
@@ -643,6 +666,7 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--top", "-n", type=int, default=5, help="推荐职业数量（默认 5）")
         sp.add_argument("--html", help="输出 HTML 报告路径")
         sp.add_argument("--md", help="输出 Markdown 报告路径")
+        sp.add_argument("--open", action="store_true", help="生成 HTML 报告后用默认浏览器打开")
         sp.add_argument("--llm", action="store_true", help="额外调用 DeepSeek 生成个性化解读")
         sp.add_argument(
             "--model",
@@ -715,6 +739,11 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     parser = build_parser()
     args = parser.parse_args(argv)
+    # --open 要有 HTML 报告才能打开。没给 --html 时落到默认文件名，
+    # 而不是「用户加了 --open 却什么都不发生」——那是很挫败的体验。
+    if getattr(args, "open", False) and not getattr(args, "html", None):
+        if getattr(args, "command", None) in ("demo", "run", "report"):
+            args.html = "report.html"
     try:
         return int(args.func(args) or 0)
     except FileNotFoundError as e:

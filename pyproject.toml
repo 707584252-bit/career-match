@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "career-compass"
-version = "1.1.0"
+version = "1.2.0"
 description = "职业能力测评与加权职业推荐引擎：21 维度题库 + 霍兰德/Big Five 理论 + 行业大盘修正 + DeepSeek 个性化解读"
 readme = "README.md"
 requires-python = ">=3.9"

@@ -13,7 +13,8 @@
 
 用法::
 
-    python scripts/import_answers.py                      # 自动找作答
+    python scripts/import_answers.py                      # 自动找作答，只导入
+    python scripts/import_answers.py --open               # 导入 + 出报告 + 打开浏览器
     python scripts/import_answers.py --from my.json        # 指定文件
     python scripts/import_answers.py --report report.html  # 顺带生成报告
     python scripts/import_answers.py --report r.html --llm # 再加 AI 解读
@@ -178,6 +179,7 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--md", help="顺带生成 Markdown 报告到该路径")
     ap.add_argument("--top", "-n", type=int, default=5, help="推荐职业数量（默认 5）")
     ap.add_argument("--llm", action="store_true", help="报告里附上 DeepSeek 个性化解读")
+    ap.add_argument("--open", action="store_true", help="生成 HTML 报告后用默认浏览器打开")
     ap.add_argument("--allow-partial", action="store_true", help="容忍未知题号等小问题，照常继续")
     args = ap.parse_args(argv[1:])
 
@@ -243,21 +245,36 @@ def main(argv: list[str]) -> int:
         encoding="utf-8",
     )
     print(f"[ok] 已导入 {len(answers)} 条作答（来源：{origin}）→ {out}")
-
-    if args.report or args.md:
+    if args.report or args.md or args.open:
         from career_compass.cli import main as cc_main
 
+        # --open 要有 HTML 才打得开：用户只加了 --open 时补一个默认文件名，
+        # 而不是让这个参数静默失效。
+        report_path = args.report
+        if args.open and not report_path:
+            report_path = "my-report.html"
+
         cmd = ["report", "-i", str(out), "-n", str(args.top)]
-        if args.report:
-            cmd += ["--html", args.report]
+        if report_path:
+            cmd += ["--html", report_path]
         if args.md:
             cmd += ["--md", args.md]
         if args.llm:
             cmd += ["--llm"]
+        if args.open:
+            cmd += ["--open"]
         print()
-        return cc_main(cmd)
+        rc = cc_main(cmd)
+        if rc == 0 and report_path:
+            print()
+            print(f"     报告文件：{Path(report_path).resolve()}")
+            print("     以后想重新生成：")
+            print(f"       career-compass report -i {out} --html {report_path}")
+        return rc
 
-    print(f"     生成报告：career-compass report -i {out} --html report.html")
+    print("     下一步，生成一份报告：")
+    print(f"       career-compass report -i {out} --html my-report.html --open")
+    print("     （或直接重跑本命令并加上 --open，导入与出报告一次完成）")
     return 0
 
 

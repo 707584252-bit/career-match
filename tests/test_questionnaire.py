@@ -410,3 +410,63 @@ def test_import_script_reports_missing_file(tmp_path):
     )
     assert r.returncode == 1
     assert "文件不存在" in r.stdout
+
+
+# ---------------------------------------------------------------------------
+# 导入脚本的 --open：把「生成好了，请自己去找」这一步省掉
+# ---------------------------------------------------------------------------
+
+
+def _prepare_browser_export(tmp_path):
+    from career_compass.cli import generate_demo_answers
+
+    src = tmp_path / "browser_export.json"
+    src.write_text(
+        json.dumps(
+            {"meta": {"source": "browser-questionnaire"}, "answers": generate_demo_answers(load_questions())},
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    return src
+
+
+def test_import_open_implies_a_default_report_name(importer, tmp_path, monkeypatch):
+    """只给 ``--open`` 时，必须自动补一个 HTML 报告名。
+
+    否则 ``--open`` 会静默失效——用户以为会弹出报告，结果什么都没发生。
+    这里替换掉真正的 ``cli.main``，避免测试真的去拉起浏览器。
+    """
+    import career_compass.cli as cli_mod
+
+    captured: list[list[str]] = []
+
+    def fake_main(argv):
+        captured.append(list(argv))
+        return 0
+
+    monkeypatch.setattr(cli_mod, "main", fake_main)
+    monkeypatch.chdir(tmp_path)
+
+    src = _prepare_browser_export(tmp_path)
+    assert importer.main(["import_answers.py", "--from", str(src), "--open"]) == 0
+
+    assert len(captured) == 1
+    argv = captured[0]
+    assert argv[0] == "report"
+    assert "--open" in argv, "必须把 --open 透传给 report 子命令"
+    assert "--html" in argv, "--open 需要一份 HTML 才有意义"
+    assert argv[argv.index("--html") + 1] == "my-report.html"
+
+
+def test_import_without_report_flags_does_not_invoke_the_reporter(importer, tmp_path, monkeypatch):
+    """没有任何出报告的参数时，不该去调用 report——只导入作答就好。"""
+    import career_compass.cli as cli_mod
+
+    called: list[list[str]] = []
+    monkeypatch.setattr(cli_mod, "main", lambda argv: called.append(list(argv)) or 0)
+    monkeypatch.chdir(tmp_path)
+
+    src = _prepare_browser_export(tmp_path)
+    assert importer.main(["import_answers.py", "--from", str(src)]) == 0
+    assert not called, "没有 --report / --md / --open 时不应生成报告"
