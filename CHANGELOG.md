@@ -7,6 +7,24 @@
 
 ---
 
+## [1.2.2] - 2026-10-13
+
+### 修复
+- **本地启动器 `run.cmd` / `terminal.cmd` 双击无反应**（症状：窗口一闪就关、
+  菜单全是乱码）。根因是这两个文件的行尾是**裸 LF**，而 Windows 批处理必须是
+  `CRLF` —— cmd.exe 解析不了，`goto` 标签对不上，且不报任何错。已改为由
+  `scripts/make_launchers.py` 生成：固定 `\r\n`、内容保持纯 ASCII，
+  顺带把解释器与 PortableGit 的绝对路径改为自动探测。
+- 批处理里的中文全部移出：菜单改由 `scripts/menu.py` 以 Python 输出。
+  原先中文既要文件编码与控制台代码页严格匹配，又要小心 Python 会把代码页切成
+  UTF-8 —— 两件事同时成立才不出乱码，太脆。现在 `.cmd` 里一个非 ASCII 字节都没有。
+
+### 新增
+- `scripts/menu.py`：中文交互菜单，附「答题请用独立浏览器窗口」的提示。
+- `scripts/make_launchers.py`：启动器生成器，带 `--check` 自检模式。
+- `tests/test_launchers.py`：11 项测试，把「批处理必须 CRLF + 纯 ASCII」变成
+  会失败的断言（已反向验证：把行尾改回 LF 时该测试确实失败）。
+
 ## [1.2.1] - 2026-10-13
 
 ### 修复
